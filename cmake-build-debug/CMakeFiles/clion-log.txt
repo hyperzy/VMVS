@@ -1,0 +1,5 @@
+/home/himalaya/Downloads/CLion-2019.2.1/clion-2019.2.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/himalaya/Documents/VMVS
+/usr/local/include/vtk-8.2/home/himalaya/anaconda3/include/python3.6m
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/himalaya/Documents/VMVS/cmake-build-debug

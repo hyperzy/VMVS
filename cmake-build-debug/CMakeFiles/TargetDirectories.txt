@@ -1,0 +1,3 @@
+/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir
+/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/edit_cache.dir
