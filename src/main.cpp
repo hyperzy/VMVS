@@ -1,26 +1,41 @@
+#include "base.h"
+#include "init.h"
+#include "display.h"
 #include <iostream>
 #include <opencv2/core.hpp>
 #include <opencv2/highgui.hpp>
 
-#include <vtkAutoInit.h>
-VTK_MODULE_INIT(vtkRenderingOpenGL2);
-VTK_MODULE_INIT(vtkInteractionStyle);
-
-#include <vtkActor.h>
-#include <vtkCylinderSource.h>
-#include <vtkNamedColors.h>
-#include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
-#include <vtkRenderer.h>
-#include <vtkRenderWindow.h>
-#include <vtkRenderWindowInteractor.h>
-#include <vtkSmartPointer.h>
+#include <filesio.h>
 
 using namespace cv;
+using namespace std;
 int main() {
-    Mat img = imread("../res/images/image_000.jpg", 0);
-    namedWindow("test", 0);
-    imshow("test", img);
-    waitKey(0);
+
+    vector<Camera> all_cams;
+    Read_data("../res/viff.xml", "../res/images", "../res/seg_images", all_cams);
+
+    vector<Camera> all_cams1{all_cams[0], all_cams[4], all_cams[9], all_cams[13],
+                             all_cams[18], all_cams[22], all_cams[27], all_cams[31]};
+    all_cams.clear();
+    all_cams.clear();
+    all_cams.shrink_to_fit();
+
+    for (auto &iter : all_cams1) {
+        iter.Calculate_extrema();
+    }
+    Grid grid(all_cams1);
+    grid.Init_grid();
+
+    Show_3D(all_cams1, grid);
+
+
+//    cout << all_cams[0].K << endl;
+//    int size[3] = {2, 3, 4};
+//    float *d1 = new float[24];
+//    for (int i = 0; i < 24; i++) {
+//        d1[i] = i;
+//    }
+//    Mat test(3, size, CV_32FC(1), d1);
+//    cout << test.at<float>(1, 2, 2) << endl;
     return 0;
 }
