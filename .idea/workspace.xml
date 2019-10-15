@@ -11,30 +11,9 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="partially completed. Still under change">
+    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/flags.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/VMVS" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/base.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/base.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/display.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/init.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/grid2d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid2d.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -121,7 +100,7 @@
       <workItem from="1570977603775" duration="25941000" />
       <workItem from="1571054600117" duration="6733000" />
       <workItem from="1571062823036" duration="23324000" />
-      <workItem from="1571094710447" duration="5741000" />
+      <workItem from="1571094710447" duration="5926000" />
     </task>
     <task id="LOCAL-00001" summary="Second Commit">
       <created>1570199633829</created>
@@ -137,7 +116,14 @@
       <option name="project" value="LOCAL" />
       <updated>1571073546363</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="2D case completed">
+      <created>1571101086067</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1571101086067</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,7 +146,8 @@
     <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="Second Commit" />
     <MESSAGE value="partially completed. Still under change" />
-    <option name="LAST_COMMIT_MESSAGE" value="partially completed. Still under change" />
+    <MESSAGE value="2D case completed" />
+    <option name="LAST_COMMIT_MESSAGE" value="2D case completed" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

@@ -32,7 +32,7 @@ int main() {
 //    grid.Init_grid();
 //
 //    Show_3D(all_cams1, grid);
-    Grid2d *grid = new Grid2d(200);
+    Grid2d *grid = new Grid2d(20);
     grid->FMM();
     auto new_grid = FMM(grid);
     delete grid;

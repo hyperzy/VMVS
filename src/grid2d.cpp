@@ -40,7 +40,7 @@ Grid2d::Grid2d(int length)
 void Grid2d::FMM()
 {
     ////  Part a. Initialize the shape. This part should be capsuled in another function.
-    dtype radius = 80;
+    dtype radius = 5;
     dtype active_bandwidth = 2.1;
     dtype landmine_distance = 3.1;
     int center_i = grid.size() / 2;
