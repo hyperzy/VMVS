@@ -123,6 +123,87 @@ VMVS/fast:
 	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/build
 .PHONY : VMVS/fast
 
+src/base.o: src/base.cpp.o
+
+.PHONY : src/base.o
+
+# target to build an object file
+src/base.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/base.cpp.o
+.PHONY : src/base.cpp.o
+
+src/base.i: src/base.cpp.i
+
+.PHONY : src/base.i
+
+# target to preprocess a source file
+src/base.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/base.cpp.i
+.PHONY : src/base.cpp.i
+
+src/base.s: src/base.cpp.s
+
+.PHONY : src/base.s
+
+# target to generate assembly for a file
+src/base.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/base.cpp.s
+.PHONY : src/base.cpp.s
+
+src/filesio.o: src/filesio.cpp.o
+
+.PHONY : src/filesio.o
+
+# target to build an object file
+src/filesio.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/filesio.cpp.o
+.PHONY : src/filesio.cpp.o
+
+src/filesio.i: src/filesio.cpp.i
+
+.PHONY : src/filesio.i
+
+# target to preprocess a source file
+src/filesio.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/filesio.cpp.i
+.PHONY : src/filesio.cpp.i
+
+src/filesio.s: src/filesio.cpp.s
+
+.PHONY : src/filesio.s
+
+# target to generate assembly for a file
+src/filesio.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/filesio.cpp.s
+.PHONY : src/filesio.cpp.s
+
+src/grid2d.o: src/grid2d.cpp.o
+
+.PHONY : src/grid2d.o
+
+# target to build an object file
+src/grid2d.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/grid2d.cpp.o
+.PHONY : src/grid2d.cpp.o
+
+src/grid2d.i: src/grid2d.cpp.i
+
+.PHONY : src/grid2d.i
+
+# target to preprocess a source file
+src/grid2d.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/grid2d.cpp.i
+.PHONY : src/grid2d.cpp.i
+
+src/grid2d.s: src/grid2d.cpp.s
+
+.PHONY : src/grid2d.s
+
+# target to generate assembly for a file
+src/grid2d.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/grid2d.cpp.s
+.PHONY : src/grid2d.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -159,6 +240,15 @@ help:
 	@echo "... rebuild_cache"
 	@echo "... VMVS"
 	@echo "... edit_cache"
+	@echo "... src/base.o"
+	@echo "... src/base.i"
+	@echo "... src/base.s"
+	@echo "... src/filesio.o"
+	@echo "... src/filesio.i"
+	@echo "... src/filesio.s"
+	@echo "... src/grid2d.o"
+	@echo "... src/grid2d.i"
+	@echo "... src/grid2d.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

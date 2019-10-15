@@ -12,6 +12,7 @@ typedef float dtype;
 typedef cv::Point3f Point3;
 typedef cv::Vec3f Vec3;
 typedef cv::Vec2f Vec2;
+constexpr dtype INF = 5e10;
 
 class Camera
 {

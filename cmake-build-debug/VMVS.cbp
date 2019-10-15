@@ -96,6 +96,15 @@
 				</MakeCommands>
 			</Target>
 		</Build>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/base.cpp">
+			<Option target="VMVS"/>
+		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/filesio.cpp">
+			<Option target="VMVS"/>
+		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/grid2d.cpp">
+			<Option target="VMVS"/>
+		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/src/main.cpp">
 			<Option target="VMVS"/>
 		</Unit>

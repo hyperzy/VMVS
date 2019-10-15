@@ -7,18 +7,34 @@
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="partially completed. Still under change">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/flags.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/flags.make" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/VMVS" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/base.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/base.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/display.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/init.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/grid2d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid2d.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -30,19 +46,23 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
   <component name="ProjectId" id="1Qjzs5TnzDHKDzdwqlXNnCsD8I2" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../FMM" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="settings.github" />
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/include" />
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
@@ -59,7 +79,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
+    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -76,8 +96,48 @@
       <option name="presentableId" value="Default" />
       <updated>1568298997162</updated>
       <workItem from="1568299000448" duration="4852000" />
-      <workItem from="1568304048765" duration="865000" />
+      <workItem from="1568304048765" duration="1572000" />
+      <workItem from="1568502645043" duration="7597000" />
+      <workItem from="1568565237988" duration="3955000" />
+      <workItem from="1569607424192" duration="10007000" />
+      <workItem from="1569704762183" duration="11488000" />
+      <workItem from="1569761941690" duration="15754000" />
+      <workItem from="1569848896610" duration="4825000" />
+      <workItem from="1569860187182" duration="11953000" />
+      <workItem from="1570111946483" duration="11681000" />
+      <workItem from="1570147079732" duration="3028000" />
+      <workItem from="1570199139452" duration="1708000" />
+      <workItem from="1570371298911" duration="7491000" />
+      <workItem from="1570383714334" duration="9626000" />
+      <workItem from="1570396964070" duration="1556000" />
+      <workItem from="1570398590095" duration="9467000" />
+      <workItem from="1570468852087" duration="5359000" />
+      <workItem from="1570631108812" duration="9048000" />
+      <workItem from="1570665922613" duration="3074000" />
+      <workItem from="1570709103507" duration="10668000" />
+      <workItem from="1570797187531" duration="19249000" />
+      <workItem from="1570898704331" duration="12090000" />
+      <workItem from="1570928922383" duration="644000" />
+      <workItem from="1570977603775" duration="25941000" />
+      <workItem from="1571054600117" duration="6733000" />
+      <workItem from="1571062823036" duration="23324000" />
+      <workItem from="1571094710447" duration="5741000" />
     </task>
+    <task id="LOCAL-00001" summary="Second Commit">
+      <created>1570199633829</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1570199633829</updated>
+    </task>
+    <task id="LOCAL-00002" summary="partially completed. Still under change">
+      <created>1571073546363</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1571073546363</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -95,5 +155,43 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <MESSAGE value="Second Commit" />
+    <MESSAGE value="partially completed. Still under change" />
+    <option name="LAST_COMMIT_MESSAGE" value="partially completed. Still under change" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid2d.cpp</url>
+          <line>663</line>
+          <option name="timeStamp" value="58" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid2d.cpp</url>
+          <line>689</line>
+          <option name="timeStamp" value="59" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid2d.cpp</url>
+          <line>655</line>
+          <option name="timeStamp" value="62" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid2d.cpp</url>
+          <line>639</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="i == 7 &amp;&amp; j == 10" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/grid2d.cpp</url>
+          <line>568</line>
+          <option name="timeStamp" value="70" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

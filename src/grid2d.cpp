@@ -40,12 +40,12 @@ Grid2d::Grid2d(int length)
 void Grid2d::FMM()
 {
     ////  Part a. Initialize the shape. This part should be capsuled in another function.
-    dtype radius = 5;
+    dtype radius = 80;
     dtype active_bandwidth = 2.1;
     dtype landmine_distance = 3.1;
     int center_i = grid.size() / 2;
     int center_j = grid[0].size() / 2;
-    #pragma omp parallel for default(none) shared(center_i, center_j, radius, active_bandwidth, landmine_distance)
+#pragma omp parallel for default(none) shared(center_i, center_j, radius, active_bandwidth, landmine_distance)
     for (int i = 0; i < grid.size(); i++) {
         bool flag_interior = false;
         unsigned short start = 0, end = 0;
@@ -75,119 +75,6 @@ void Grid2d::FMM()
         }
     }
 #pragma omp barrier
-
-    // Calculating total time taken by the program.
-//    double time_taken = double(end - start) / double(CLOCKS_PER_SEC);
-//    cout << time_taken << endl;
-    for (unsigned long i = 0; i < grid.size(); i++) {
-        for(unsigned long j = 0; j < grid[i].size(); j++) {
-            cout << fixed << setprecision(3) << setw(5) << setfill('0') << right << grid[i][j].phi_val << " ";
-        }
-//        if (narrow_band[i].empty()) {
-//            cout << "Not in band" << endl;
-//            continue;
-//        }
-//        for (auto &iter : narrow_band[i]) {
-//            cout << iter.start << " " << iter.end;
-//        }
-        cout << endl;
-
-    }
-//    Approx_front();
-
-    //// FMM
-    ///// FMM init
-    Grid2d grid_new(grid.size());
-    // index of points where front lie inside
-    vector<IndexPair> pos_val_front_index;
-    vector<IndexPair> neg_val_front_index;
-    // a heap sort data structure to store grids to be processed.
-    priority_queue<PointKeyVal> close_pq_pos;
-    priority_queue<PointKeyVal> close_pq_neg;
-    for (unsigned short i = 0; i < grid.size(); i++) {
-        for (auto &iter : narrow_band[i]) {
-            for (unsigned short j = iter.start; j < iter.end; j++) {
-                unsigned short sign_changed = isFrontHere(i, j);
-                if (sign_changed != 0) {
-                    //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
-                    // narrowband status, phival, velocity
-                    // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
-                    Determine_front_property(this->grid, grid_new, i, j, sign_changed);
-                    grid_new.grid[i][j] = this->grid[i][j];
-                    // put >0 and  <0 into different set so that two direction fmm can be done.
-                    if (this->grid[i][j].phi_val > 0) {
-                       close_pq_pos.emplace(PointKeyVal{i, j, grid_new.grid[i][j].phi_val});
-                       grid_new.grid[i][j].fmm_status = FMM_Status::OTHER_SIDE;
-                    }
-                    else if (this->grid[i][j].phi_val < 0){
-                       close_pq_neg.emplace(PointKeyVal{i, j, grid_new.grid[i][j].phi_val});
-                       grid_new.grid[i][j].fmm_status = FMM_Status::OTHER_SIDE;
-                    }
-                    else {
-                        cerr << "Initializing front went wrong!" << endl;
-                        exit(1);
-                    }
-                    grid_new.front.emplace_back(IndexPair{i, j});
-                    grid_new.grid[i][j].extension_status = ExtensionStatus::NATURAL;
-                }
-                else if (this->grid[i][j].phi_val == 0) {
-                    Zero_val_handler(*this, grid_new, i, j, close_pq_pos, close_pq_neg);
-                    grid_new.front.emplace_back(IndexPair{i, j});
-                }
-            }
-        }
-    }
-    //// write a function to print all new grid value to compare with old one.
-    cout << endl;
-    for (unsigned long i = 0; i < grid_new.grid.size(); i++) {
-        for(unsigned long j = 0; j < grid_new.grid[i].size(); j++) {
-            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << grid_new.grid[i][j].phi_val << " ";
-        }
-//        if (narrow_band[i].empty()) {
-//            cout << "Not in band" << endl;
-//            continue;
-//        }
-//        for (auto &iter : narrow_band[i]) {
-//            cout << iter.start << " " << iter.end;
-//        }
-        cout << endl;
-    }
-
-    //// FMM marching
-    grid_new.Marching(close_pq_pos, active_bandwidth, landmine_distance, false);
-    grid_new.Marching(close_pq_neg, active_bandwidth, landmine_distance, true);
-    cout << endl;
-    grid_new.Extend_velocity();
-    for (unsigned long i = 0; i < grid_new.grid.size(); i++) {
-        for(unsigned long j = 0; j < grid_new.grid[i].size(); j++) {
-            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << grid_new.grid[i][j].velocity << " ";
-        }
-//        if (narrow_band[i].empty()) {
-//            cout << "Not in band" << endl;
-//            continue;
-//        }
-//        for (auto &iter : narrow_band[i]) {
-//            cout << iter.start << " " << iter.end;
-//        }
-        cout << endl;
-    }
-
-    grid_new.Build_band();
-    cout << endl;
-    for (unsigned long i = 0; i < grid_new.grid.size(); i++) {
-        for(unsigned long j = 0; j < grid_new.grid[i].size(); j++) {
-            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << grid_new.grid[i][j].phi_val << " ";
-        }
-//        if (grid_new.narrow_band[i].empty()) {
-//            cout << "Not in band" << endl;
-//            continue;
-//        }
-//        for (auto &iter : grid_new.narrow_band[i]) {
-//            cout << iter.start << " " << iter.end;
-//        }
-        cout << endl;
-    }
-    grid_new.Approx_front();
 }
 
 bool Grid2d::isValidRange(unsigned short i, unsigned short j)
@@ -402,7 +289,7 @@ void Grid2d::Approx_front()
 //    cout << mask_mat << endl;
     namedWindow("show front", 0);
     imshow("show front", out);
-    waitKey(0);
+    waitKey(1);
 
     for (unsigned long i = 0; i < grid.size(); i++) {
         delete [] mask[i];
@@ -413,10 +300,10 @@ void Grid2d::Approx_front()
 unsigned short Grid2d::isFrontHere(unsigned long i, unsigned long j)
 {
     unsigned short res = 0;
-    res =  (grid[i][j].phi_val * grid[i - 1][j].phi_val < 0) |
-            (grid[i][j].phi_val * grid[i][j - 1].phi_val < 0) << 1u |
-            (grid[i][j].phi_val * grid[i + 1][j].phi_val < 0) << 2u |
-            (grid[i][j].phi_val * grid[i][j + 1].phi_val < 0) << 3u;
+    res =  (grid[i][j].phi_val * grid[i - 1][j].phi_val <= 0) |
+            (grid[i][j].phi_val * grid[i][j - 1].phi_val <= 0) << 1u |
+            (grid[i][j].phi_val * grid[i + 1][j].phi_val <= 0) << 2u |
+            (grid[i][j].phi_val * grid[i][j + 1].phi_val <= 0) << 3u;
     return res;
 }
 
@@ -452,65 +339,97 @@ unsigned short Determine_front_type(unsigned short sign_changed)
 
 }
 
-// the lowest position when first 1 occurs
-int Pos_1_occur(unsigned sign_changed)
+// the lowest position when first n consecutive 1s occurs. (circular)
+int Pos_1_occur(unsigned sign_changed, int n)
 {
     int pos = 0;
+    // 4 for 2d, 6 for 3d
+    sign_changed = sign_changed | sign_changed << 4u;
     while (sign_changed) {
-        if (sign_changed & 1u) return pos;
+        switch (n) {
+            case 1:
+                if ((sign_changed & 0x01u) == 0x01u) return pos;
+                break;
+            case 2:
+                if ((sign_changed & 0x03u) == 0x03u) return pos;
+                break;
+            case 3:
+                if ((sign_changed & 0x07u) == 0x07u) return pos;
+                break;
+            case 4:
+                if ((sign_changed & 0xffu) == 0xffu) return pos;
+            default:
+                cerr << "error signed change" << endl;
+                exit(1);
+        }
         pos++;
         sign_changed = sign_changed >> 1u;
     }
 }
-void Grid2d::Determine_front_property(std::vector<std::vector<PointProperty>> &old_grid,
-                                      Grid2d &new_grid,
-                                      unsigned short i, unsigned short j,
-                                      unsigned short sign_changed)
+void Determine_front_property(Grid2d *old_grid, Grid2d *new_grid,
+                                unsigned short i, unsigned short j,
+                                unsigned short sign_changed)
 {
+    if (old_grid->grid[i][j].phi_val == 0) {
+        new_grid->grid[i][j].fmm_status = FMM_Status::ACCEPT;
+        new_grid->grid[i][j].nb_status = NarrowBandStatus::ACTIVE;
+        new_grid->grid[i][j].phi_val = 0;
+        return;
+    }
     auto front_type = Determine_front_type(sign_changed);
     int index[4][2] = {-1, 0, 0, -1, 1, 0, 0, 1};
-    int pos1 = Pos_1_occur(sign_changed);
-    dtype dist1 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
+    int pos1;
+    dtype dist1;
     dtype dist2, dist3, dist4, temp_dist1, temp_dist2;
     int pos2, pos3, pos4;
     switch (front_type) {
         case TYPE_A:
-            new_grid.grid[i][j].phi_val = dist1;
+            pos1 = Pos_1_occur(sign_changed, 1);
+            dist1 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
+            new_grid->grid[i][j].phi_val = dist1;
             break;
         case TYPE_B:
+            pos1 = Pos_1_occur(sign_changed, 2);
+            dist1 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
             // the second related position
             // 4 for 2d, 6 for 3d
             pos2 = (pos1 + 1) % 4;
-            dist2 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
-            new_grid.grid[i][j].phi_val = sqrt(pow(dist1 * dist2, 2) / (pow(dist1, 2) + pow(dist2, 2)));
+            dist2 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
+            new_grid->grid[i][j].phi_val = sqrt(pow(dist1 * dist2, 2) / (pow(dist1, 2) + pow(dist2, 2)));
             break;
         case TYPE_C:
+            pos1 = Pos_1_occur(sign_changed, 3);
+            dist1 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
             // the second related position
             // 4 for 2d, 6 for 3d
             pos2 = (pos1 + 1) % 4;
-            dist2 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
+            dist2 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
             // the third related position
             // 4 for 2d, 6 for 3d
             pos3 = (pos1 + 2) % 4;
-            dist3 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos3][0]][j + index[pos3][1]].phi_val);
+            dist3 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos3][0]][j + index[pos3][1]].phi_val);
             temp_dist1 = min(dist1, dist3);
-            new_grid.grid[i][j].phi_val = sqrt(pow(temp_dist1 * dist2, 2) / (pow(temp_dist1, 2) + pow(dist2, 2)));
+            new_grid->grid[i][j].phi_val = sqrt(pow(temp_dist1 * dist2, 2) / (pow(temp_dist1, 2) + pow(dist2, 2)));
             break;
         case TYPE_D:
+            pos1 = Pos_1_occur(sign_changed, 2);
+            dist1 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
             pos2 = (pos1 + 2) % 4;
-            dist2 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
-            new_grid.grid[i][j].phi_val = min(dist1, dist2);
+            dist2 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
+            new_grid->grid[i][j].phi_val = min(dist1, dist2);
             break;
         case TYPE_E:
+            pos1 = Pos_1_occur(sign_changed, 4);
+            dist1 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos1][0]][j + index[pos1][1]].phi_val);
             pos2 = (pos1 + 1) % 4;
             pos3 = (pos1 + 2) % 4;
             pos4 = (pos1 + 3) % 4;
-            dist2 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
-            dist3 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos3][0]][j + index[pos3][1]].phi_val);
-            dist4 = old_grid[i][j].phi_val / (old_grid[i][j].phi_val - old_grid[i + index[pos4][0]][j + index[pos4][1]].phi_val);
+            dist2 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos2][0]][j + index[pos2][1]].phi_val);
+            dist3 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos3][0]][j + index[pos3][1]].phi_val);
+            dist4 = old_grid->grid[i][j].phi_val / (old_grid->grid[i][j].phi_val - old_grid->grid[i + index[pos4][0]][j + index[pos4][1]].phi_val);
             temp_dist1 = min(dist1, dist3);
             temp_dist2 = min(dist2, dist4);
-            new_grid.grid[i][j].phi_val = sqrt(pow(temp_dist1 * temp_dist2, 2) / (pow(temp_dist1, 2) + pow(temp_dist2, 2)));
+            new_grid->grid[i][j].phi_val = sqrt(pow(temp_dist1 * temp_dist2, 2) / (pow(temp_dist1, 2) + pow(temp_dist2, 2)));
             break;
         default:
             cerr << "Error front type. Check the Code!" << endl;
@@ -571,8 +490,10 @@ void Grid2d::Extend_velocity(int fmm_status, unsigned short i, unsigned short j)
 void Grid2d::Extend_velocity()
 {
 //#pragma omp parallel for default(none)
-    for (const auto &iter : this->marching_sequence) {
-        if (this->grid[iter.i][iter.j].extension_status == ExtensionStatus::NATURAL) {
+    for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
+        auto &iter = this->marching_sequence[idx];
+        if (this->grid[iter.i][iter.j].nb_status == NarrowBandStatus::ACTIVE
+        && this->grid[iter.i][iter.j].extension_status == ExtensionStatus::NATURAL) {
             dtype phi_x = (this->grid[iter.i][iter.j + 1].phi_val - this->grid[iter.i][iter.j - 1].phi_val) / 2;
             dtype phi_y = (this->grid[iter.i + 1][iter.j].phi_val - this->grid[iter.i - 1][iter.j].phi_val) / 2;
             if (phi_x != 0 || phi_y != 0) {
@@ -587,19 +508,20 @@ void Grid2d::Extend_velocity()
                 this->grid[iter.i][iter.j].velocity = 0;
             }
         }
-        else {
+        else if (this->grid[iter.i][iter.j].nb_status == NarrowBandStatus::ACTIVE
+                 && this->grid[iter.i][iter.j].extension_status == ExtensionStatus::EXTENSION) {
             if (this->grid[iter.i][iter.j].phi_val > 0) {
                 unsigned short argmin_i = this->grid[iter.i - 1][iter.j].phi_val <= this->grid[iter.i + 1][iter.j].phi_val ? iter.i - 1 : iter.i + 1;
                 unsigned short argmin_j = this->grid[iter.i][iter.j - 1].phi_val <= this->grid[iter.i][iter.j + 1].phi_val ? iter.j - 1 : iter.j + 1;
-                this->grid[iter.i][iter.j].velocity = (this->grid[argmin_i][iter.j].phi_val * (this->grid[iter.i][iter.j].phi_val - this->grid[argmin_i][iter.j].phi_val) +
-                                             this->grid[iter.i][argmin_j].phi_val * (this->grid[iter.i][iter.j].phi_val - this->grid[iter.i][argmin_j].phi_val)) /
-                                            (2 * this->grid[iter.i][iter.j].phi_val - this->grid[argmin_i][iter.j].phi_val - this->grid[iter.i][argmin_j].phi_val);
+                this->grid[iter.i][iter.j].velocity = (this->grid[argmin_i][iter.j].velocity * (this->grid[iter.i][iter.j].phi_val - this->grid[argmin_i][iter.j].phi_val) +
+                                                       this->grid[iter.i][argmin_j].velocity * (this->grid[iter.i][iter.j].phi_val - this->grid[iter.i][argmin_j].phi_val)) /
+                                                      (2 * this->grid[iter.i][iter.j].phi_val - this->grid[argmin_i][iter.j].phi_val - this->grid[iter.i][argmin_j].phi_val);
             }
             else {
-                unsigned short argmax_i = this->grid[iter.i - 1][iter.j].phi_val <= this->grid[iter.i + 1][iter.j].phi_val ? iter.i + 1 : iter.i - 1;
-                unsigned short argmax_j = this->grid[iter.i][iter.j - 1].phi_val <= this->grid[iter.i][iter.j + 1].phi_val ? iter.j + 1 : iter.j - 1;
-                this->grid[iter.i][iter.j].velocity = (this->grid[argmax_i][iter.j].phi_val * (this->grid[iter.i][iter.j].phi_val - this->grid[argmax_i][iter.j].phi_val) +
-                                                       this->grid[iter.i][argmax_j].phi_val * (this->grid[iter.i][iter.j].phi_val - this->grid[iter.i][argmax_j].phi_val)) /
+                unsigned short argmax_i = this->grid[iter.i - 1][iter.j].phi_val >= this->grid[iter.i + 1][iter.j].phi_val ? iter.i - 1 : iter.i + 1;
+                unsigned short argmax_j = this->grid[iter.i][iter.j - 1].phi_val >= this->grid[iter.i][iter.j + 1].phi_val ? iter.j - 1 : iter.j + 1;
+                this->grid[iter.i][iter.j].velocity = (this->grid[argmax_i][iter.j].velocity * (this->grid[iter.i][iter.j].phi_val - this->grid[argmax_i][iter.j].phi_val) +
+                                                       this->grid[iter.i][argmax_j].velocity * (this->grid[iter.i][iter.j].phi_val - this->grid[iter.i][argmax_j].phi_val)) /
                                                       (2 * this->grid[iter.i][iter.j].phi_val - this->grid[argmax_i][iter.j].phi_val - this->grid[iter.i][argmax_j].phi_val);
             }
         }
@@ -611,3 +533,172 @@ void Grid2d::clear()
     this->narrow_band.clear();
 
 }
+
+Grid2d* FMM(Grid2d *init_grid)
+{
+//    init_grid->FMM();
+
+//    cout << endl;
+//    for (unsigned long i = 0; i < init_grid->grid.size(); i++) {
+//        for(unsigned long j = 0; j < init_grid->grid[i].size(); j++) {
+//            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << init_grid->grid[i][j].phi_val << " ";
+//        }
+////        if (narrow_band[i].empty()) {
+////            cout << "Not in band" << endl;
+////            continue;
+////        }
+////        for (auto &iter : narrow_band[i]) {
+////            cout << iter.start << " " << iter.end;
+////        }
+//        cout << endl;
+//    }
+
+    //// FMM
+    ///// FMM init: find front
+    // parallel programming can be applied here
+    Grid2d *new_grid = new Grid2d(init_grid->grid.size());
+    // index of points where front lie inside
+    vector<IndexPair> pos_val_front_index;
+    vector<IndexPair> neg_val_front_index;
+    // a heap sort data structure to store grids to be processed.
+    priority_queue<PointKeyVal> close_pq_pos;
+    priority_queue<PointKeyVal> close_pq_neg;
+    for (unsigned short i = 0; i < init_grid->grid.size(); i++) {
+        for (auto &iter : init_grid->narrow_band[i]) {
+            for (unsigned short j = iter.start; j < iter.end; j++) {
+                if (init_grid->grid[i][j].nb_status == NarrowBandStatus::ACTIVE) {
+                    unsigned short sign_changed = init_grid->isFrontHere(i, j);
+                    if (sign_changed != 0) {
+                        //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
+                        // narrowband status, phival, velocity
+                        // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
+                        Determine_front_property(init_grid, new_grid, i, j, sign_changed);
+                        new_grid->grid[i][j] = init_grid->grid[i][j];
+                        // put >0 and  <0 into different set so that two direction fmm can be done.
+                        if (init_grid->grid[i][j].phi_val > 0) {
+                            close_pq_pos.emplace(PointKeyVal{i, j, new_grid->grid[i][j].phi_val});
+                            new_grid->grid[i][j].fmm_status = FMM_Status::OTHER_SIDE;
+                        } else if (init_grid->grid[i][j].phi_val < 0) {
+                            close_pq_neg.emplace(PointKeyVal{i, j, new_grid->grid[i][j].phi_val});
+                            new_grid->grid[i][j].fmm_status = FMM_Status::OTHER_SIDE;
+                        } else {
+                            new_grid->marching_sequence.emplace_back(IndexPair{i, j});
+                            new_grid->front.emplace_back(IndexPair{i, j});
+                        }
+                        new_grid->front.emplace_back(IndexPair{i, j});
+                        new_grid->grid[i][j].extension_status = ExtensionStatus::NATURAL;
+                    }
+//                else if (this->grid[i][j].phi_val == 0) {
+//                    Zero_val_handler(*this, new_grid, i, j, close_pq_pos, close_pq_neg);
+//                    new_grid.front.emplace_back(IndexPair{i, j});
+//                }
+                }
+            }
+        }
+    }
+
+    new_grid->narrow_band.clear();
+    new_grid->narrow_band.resize(new_grid->grid.size());
+
+//    cout << endl;
+//    for (unsigned long i = 0; i < new_grid->grid.size(); i++) {
+//        for(unsigned long j = 0; j < new_grid->grid[i].size(); j++) {
+//            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << new_grid->grid[i][j].phi_val << " ";
+//        }
+////        if (narrow_band[i].empty()) {
+////            cout << "Not in band" << endl;
+////            continue;
+////        }
+////        for (auto &iter : narrow_band[i]) {
+////            cout << iter.start << " " << iter.end;
+////        }
+//        cout << endl;
+//    }
+
+    //// FMM marching
+    dtype active_bandwidth = 2.1;
+    dtype landmine_distance = 3.1;
+    new_grid->Marching(close_pq_pos, active_bandwidth, landmine_distance, false);
+    new_grid->Marching(close_pq_neg, active_bandwidth, landmine_distance, true);
+    cout << endl;
+
+//    for (unsigned long i = 0; i < new_grid->grid.size(); i++) {
+//        for(unsigned long j = 0; j < new_grid->grid[i].size(); j++) {
+//            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << new_grid->grid[i][j].phi_val << " ";
+//        }
+////        if (new_grid->narrow_band[i].empty()) {
+////            cout << "Not in band" << endl;
+////            continue;
+////        }
+////        for (auto &iter : new_grid->narrow_band[i]) {
+////            cout << iter.start << " " << iter.end;
+////        }
+//        cout << endl;
+//    }
+//    cout << endl;
+
+    new_grid->Build_band();
+
+    new_grid->Extend_velocity();
+//    for (unsigned long i = 0; i < new_grid->grid.size(); i++) {
+//        for(unsigned long j = 0; j < new_grid->grid[i].size(); j++) {
+//            cout << scientific << setprecision(3) << setw(5) << setfill('0') << right << new_grid->grid[i][j].velocity << " ";
+//        }
+////        if (narrow_band[i].empty()) {
+////            cout << "Not in band" << endl;
+////            continue;
+////        }
+////        for (auto &iter : narrow_band[i]) {
+////            cout << iter.start << " " << iter.end;
+////        }
+//        cout << endl;
+//    }
+    new_grid->Approx_front();
+    return new_grid;
+}
+
+void Evolve(Grid2d *old_grid)
+{
+    double start, end;
+    int counter = 0;
+    dtype timestep = 0.5;
+    while (counter < 1500) {
+        start = clock();
+        cout << "iteration : " << counter << endl;
+        Grid2d *new_grid = new Grid2d(old_grid->grid.size());
+//#pragma omp parallel for default(none) schedule(dynamic, 5) shared(timestep, new_grid, old_grid)
+        for (unsigned i = old_grid->band_begin_i; i < old_grid->band_end_i; i++) {
+            for (const auto &iter : old_grid->narrow_band[i]) {
+                for (auto j = iter.start; j < iter.end; j++) {
+                    if (old_grid->grid[i][j].nb_status == ACTIVE && old_grid->grid[i][j].velocity != 0) {
+                        // which means phi_x and phi_y are not zeros
+                        dtype phi_x = (old_grid->grid[i][j + 1].phi_val - old_grid->grid[i][j - 1].phi_val) / 2;
+                        dtype phi_y = (old_grid->grid[i + 1][j].phi_val - old_grid->grid[i - 1][j].phi_val) / 2;
+                        new_grid->grid[i][j].phi_val = old_grid->grid[i][j].phi_val + timestep * old_grid->grid[i][j].velocity * sqrt(pow(phi_x, 2) + pow(phi_y, 2));
+                    }
+                    else { // two cases here: 1. velocity = 0, so the value wont change, directly copy
+                           //                 2. narrow_bandstatus = LANDMINE
+                        // directly copy lanmine value since it will not ba calculated but only for finding front
+                        new_grid->grid[i][j].phi_val = old_grid->grid[i][j].phi_val;
+                    }
+                    new_grid->grid[i][j].nb_status = old_grid->grid[i][j].nb_status;
+
+                }
+            }
+        }
+        new_grid->narrow_band = move(old_grid->narrow_band);
+        auto newest_grid = FMM(new_grid);
+        newest_grid->Approx_front();
+        delete new_grid;
+        delete old_grid;
+        old_grid = newest_grid;
+        old_grid->Approx_front();
+        counter++;
+        end = clock();
+        cout << (end - start) / CLOCKS_PER_SEC << endl;
+    }
+
+
+}
+
+
