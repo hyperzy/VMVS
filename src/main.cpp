@@ -32,9 +32,10 @@ int main() {
 //    grid.Init_grid();
 //
 //    Show_3D(all_cams1, grid);
-    Grid2d *grid = new Grid2d(20);
-    grid->FMM();
-    auto new_grid = FMM(grid);
+    Grid2d *grid = new Grid2d(40, 40);
+    grid->FMM_init();
+    auto new_grid = FMM2d(grid, true);
+    new_grid->Approx_front();
     delete grid;
     Evolve(new_grid);
     end = clock();

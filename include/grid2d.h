@@ -5,6 +5,12 @@
 #ifndef VMVS_GRID2D_H
 #define VMVS_GRID2D_H
 
+//// This version changes the logistics that
+//// 1. swap the phi_val since we want to keep phi_val before landmine is hit
+//// 2. keep narrow band data structure until landmine is hit
+//// 3. separate velocity from PointProperty
+
+
 #include "base.h"
 #include <list>
 #include <queue>
@@ -48,12 +54,6 @@ struct NarrowBandBound {
 };
 
 struct PointProperty {
-    // level set function value
-    dtype phi_val = INF;
-    // coordinate
-    Point3 coord;
-    // normal velocity
-    dtype velocity;
     int nb_status = NarrowBandStatus::OUTSIDE;
     int fmm_status = FMM_Status::FAR;
     int extension_status;
@@ -75,15 +75,23 @@ struct PointKeyVal {
 
 class Grid2d {
 public:
-    Grid2d(int length);
-    std::vector<std::vector<PointProperty>> grid;
+    Grid2d();
+    Grid2d(unsigned short length, unsigned short height);
+    std::vector<PointProperty> grid;
+    std::vector<dtype> phi;
+    // normal velocity
+    std::vector<dtype> velocity;
     std::vector<std::list<NarrowBandBound>> narrow_band;
     std::vector<IndexPair> front;
     std::vector<IndexPair> marching_sequence;
-    unsigned long height, width;
+    std::vector<Point3> coord;
+    dtype active_bandwidth;
+    dtype landmine_distance;
+    dtype boundary_distance;
+    const unsigned short height, width;
     unsigned short band_begin_i, band_end_i;
-    void clear();
-    void FMM();
+    inline unsigned long Index(unsigned short i, unsigned short j);
+    void FMM_init();
     void Approx_front();
     /**
      *  Determine if the front is around this point( bottom, top, left, right)
@@ -108,7 +116,7 @@ public:
      * @param landmine_distance
      * @param inside
      */
-    void Marching(std::priority_queue<PointKeyVal> &close_set, dtype active_bandwidth, dtype landmine_distance, bool inside);
+    void Marching(std::priority_queue<PointKeyVal> &close_set, bool inside);
 
     /**
      *  Construct a coarse narrow band (or say a roughly region that is active).
@@ -119,8 +127,10 @@ public:
      */
     void Build_coarse_band(unsigned short i, unsigned short j);
 
-    void Extend_velocity(int fmm_status, unsigned short i, unsigned short j);
     void Extend_velocity();
+    void Extend_velocity(int fmm_status, unsigned short i, unsigned short j);
+    void Update_velocity();
+    Grid2d* Reinitialize();
 };
 
 void Zero_val_handler(Grid2d &old_grid, Grid2d &new_grid,
@@ -128,8 +138,13 @@ void Zero_val_handler(Grid2d &old_grid, Grid2d &new_grid,
                         std::priority_queue<PointKeyVal> &close_pq_pos,
                         std::priority_queue<PointKeyVal> &close_pq_neg);
 
-
-Grid2d* FMM(Grid2d *initial_grid);
+/**
+ *
+ * @param initial_grid
+ * @param reinit True for re-initialization. False for not reinitialization
+ * @return
+ */
+Grid2d* FMM2d(Grid2d *initial_grid, bool reinit);
 
 /**
  * The implementation of this function refers to original paper.
