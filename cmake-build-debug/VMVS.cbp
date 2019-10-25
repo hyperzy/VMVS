@@ -99,10 +99,16 @@
 		<Unit filename="/home/himalaya/Documents/VMVS/src/base.cpp">
 			<Option target="VMVS"/>
 		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/display.cpp">
+			<Option target="VMVS"/>
+		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/src/filesio.cpp">
 			<Option target="VMVS"/>
 		</Unit>
-		<Unit filename="/home/himalaya/Documents/VMVS/src/grid2d.cpp">
+		<Unit filename="/home/himalaya/Documents/VMVS/src/grid3d.cpp">
+			<Option target="VMVS"/>
+		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/init.cpp">
 			<Option target="VMVS"/>
 		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/src/main.cpp">

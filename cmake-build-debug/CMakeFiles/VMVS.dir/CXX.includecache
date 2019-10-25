@@ -12,7 +12,7 @@ opencv2/core.hpp
 vector
 -
 
-../include/grid2d.h
+../include/grid3d.h
 base.h
 ../include/base.h
 list
@@ -20,17 +20,7 @@ list
 queue
 -
 
-/home/himalaya/Documents/VMVS/src/grid2d.cpp
-grid2d.h
-/home/himalaya/Documents/VMVS/src/grid2d.h
-omp.h
--
-iostream
--
-iomanip
--
-queue
--
-opencv2/highgui.hpp
--
+/home/himalaya/Documents/VMVS/src/grid3d.cpp
+grid3d.h
+/home/himalaya/Documents/VMVS/src/grid3d.h
 

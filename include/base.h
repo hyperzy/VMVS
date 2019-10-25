@@ -13,6 +13,8 @@ typedef cv::Point3f Point3;
 typedef cv::Vec3f Vec3;
 typedef cv::Vec2f Vec2;
 constexpr dtype INF = 5e10;
+typedef unsigned short IdxType;
+typedef unsigned short DimUnit;
 
 class Camera
 {
