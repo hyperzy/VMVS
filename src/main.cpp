@@ -7,7 +7,7 @@
 #include <opencv2/highgui.hpp>
 
 #include "filesio.h"
-
+#include "testvtk.cpp"
 
 using namespace cv;
 using namespace std;
@@ -29,8 +29,10 @@ int main() {
     }
     BoundingBox box(all_cams1, 0.4);
     box.Init();
+    Init_sphere_shape(box, 15);
 
     Show_3D(all_cams1, box);
+//    testvtk();
 ////2d test)
 /*
     Grid2d *grid = new Grid2d(40, 40);

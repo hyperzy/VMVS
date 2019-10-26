@@ -14,7 +14,7 @@ Grid3d::Grid3d(DimUnit length, DimUnit width, DimUnit height):
     this->phi.resize(total_num);
     this->velocity.resize(total_num);
     this->narrow_band.resize(length);
-    for (auto iter : this->narrow_band) {iter.resize(width);}
+    for (auto &iter : this->narrow_band) {iter.resize(width);}
     this->band_begin_i = length;
     this->band_end_i = 0;
     this->band_begin_j = width;

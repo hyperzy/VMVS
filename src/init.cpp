@@ -165,14 +165,14 @@ void BoundingBox::Determine_bound_coord()
 //    for (const auto &it : this->__extents) {
 //        cout << it << endl;
 //    }
-    this->__bound_coord.emplace_back(Point3(x_min, y_min, z_max));
-    this->__bound_coord.emplace_back(Point3(x_max, y_min, z_max));
-    this->__bound_coord.emplace_back(Point3(x_max, y_max, z_max));
-    this->__bound_coord.emplace_back(Point3(x_min, y_max, z_max));
     this->__bound_coord.emplace_back(Point3(x_min, y_min, z_min));
     this->__bound_coord.emplace_back(Point3(x_max, y_min, z_min));
     this->__bound_coord.emplace_back(Point3(x_max, y_max, z_min));
     this->__bound_coord.emplace_back(Point3(x_min, y_max, z_min));
+    this->__bound_coord.emplace_back(Point3(x_min, y_min, z_max));
+    this->__bound_coord.emplace_back(Point3(x_max, y_min, z_max));
+    this->__bound_coord.emplace_back(Point3(x_max, y_max, z_max));
+    this->__bound_coord.emplace_back(Point3(x_min, y_max, z_max));
 }
 
 std::vector<dtype> BoundingBox::Get_extents() const{
@@ -190,6 +190,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     auto ny = (DimUnit)((extent[3] - extent[2]) / box.resolution);
     auto nz = (DimUnit)((extent[5] - extent[4]) / box.resolution);
     box.grid3d = new Grid3d(nx, ny, nz);
+//    box.grid3d = new Grid3d(20, 20, 20);
     Grid3d *&grid = box.grid3d;
     IdxType center_i = grid->length / 2;
     IdxType center_j = grid->width / 2;
@@ -203,26 +204,27 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
                 grid->phi[grid->Index(i, j, k)] = sqrt(pow(i - center_i, 2)
                                                        + pow(j - center_j, 2)
                                                        + pow(k - center_k, 2)) - radius;
-                if (!flag_interior) {start = k, end = k;}
-                else { end = k;}
-                auto absolute_val = abs(grid->phi[grid->Index(i, j, k)]);
-                auto &nb_status = grid->grid_prop[grid->Index(i, j, k)].nb_status;
-                if (absolute_val <= grid->boundary_distance) {
-                    flag_interior = true;
-                    grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
-                    grid->band_end_i = i > grid->band_end_i ? i : grid->band_end_i;
-                    grid->band_begin_j = j < grid->band_begin_j ? j : grid->band_begin_j;
-                    grid->band_end_j = j > grid->band_end_j ? j : grid->band_end_j;
-
-                    if (absolute_val <= grid->active_distance) { nb_status = NarrowBandStatus::ACTIVE;}
-                    else if (absolute_val <= grid->landmine_distance) { nb_status = NarrowBandStatus::LANDMINE;}
-                    else {nb_status = NarrowBandStatus::BOUNDARY;}
-                }
-                else { flag_interior = false;}
-
-                if (start != end && !flag_interior) {
-                    grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
-                }
+//                grid->phi[grid->Index(i, j, k)] = max(max(abs(i - center_i), abs(j - center_j)), abs(k - center_k));
+//                if (!flag_interior) {start = k, end = k;}
+//                else { end = k;}
+//                auto absolute_val = abs(grid->phi[grid->Index(i, j, k)]);
+//                auto &nb_status = grid->grid_prop[grid->Index(i, j, k)].nb_status;
+//                if (absolute_val <= grid->boundary_distance) {
+//                    flag_interior = true;
+//                    grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
+//                    grid->band_end_i = i > grid->band_end_i ? i : grid->band_end_i;
+//                    grid->band_begin_j = j < grid->band_begin_j ? j : grid->band_begin_j;
+//                    grid->band_end_j = j > grid->band_end_j ? j : grid->band_end_j;
+//
+//                    if (absolute_val <= grid->active_distance) { nb_status = NarrowBandStatus::ACTIVE;}
+//                    else if (absolute_val <= grid->landmine_distance) { nb_status = NarrowBandStatus::LANDMINE;}
+//                    else {nb_status = NarrowBandStatus::BOUNDARY;}
+//                }
+//                else { flag_interior = false;}
+//
+//                if (start != end && !flag_interior) {
+//                    grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
+//                }
             }
         }
     }

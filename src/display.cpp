@@ -3,6 +3,7 @@
 //
 
 #include "display.h"
+#include <omp.h>
 
 #include <vtkAutoInit.h>
 VTK_MODULE_INIT(vtkRenderingOpenGL2);
@@ -25,6 +26,12 @@ VTK_MODULE_INIT(vtkRenderingFreeType);
 #include <vtkCaptionActor2D.h>
 #include <vtkTextProperty.h>
 #include <vtkAxesActor.h>
+#include <vtkFloatArray.h>
+#include <vtkImageData.h>
+#include <vtkPointData.h>
+#include <vtkMarchingCubes.h>
+#include <vtkImageImport.h>
+#include <iostream>
 
 using namespace std;
 
@@ -44,6 +51,100 @@ vtkSmartPointer<vtkActor> Construct_lineActor(const Point3 &p1, const Point3 &p2
     line_actor->GetProperty()->SetLineWidth(1.5);
     line_actor->GetProperty()->SetColor(colors->GetColor3d("Black").GetData());
     return line_actor;
+}
+
+//void CreateData(vtkImageData* data) {
+//    data->SetExtent(-25, 25, -25, 25, -25, 25);
+//    data->AllocateScalars(VTK_DOUBLE, 1);
+//    int *extent = data->GetExtent();
+//    for (int z = extent[4]; z<= extent[5]; z++){
+//        for (int y = extent[2]; y <= extent[3]; y++) {
+//            for (int x = extent[0]; x <= extent[1]; x++) {
+//                double *pixel = static_cast<double *>(data->GetScalarPointer(x, y, z));
+//                pixel[0] = sqrt(pow(x, 2.0) + pow(y, 2.0) + pow(z, 2.0)) - 10;
+//            }
+//        }
+//    }
+//}
+
+vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_set_val)
+{
+    auto total_num_points = box.grid3d->length * box.grid3d->width * box.grid3d->height;
+    dtype *new_phi = new dtype [total_num_points];
+    auto depth = box.grid3d->height;
+    auto width = box.grid3d->width;
+    auto height = box.grid3d->length;
+    //// change the storing order for vtk
+#pragma omp parallel for default(none) shared(depth, width, height, new_phi, box)
+    for (IdxType z = 0; z < depth; z++) {
+        for (IdxType y = 0; y < width; y++) {
+            for (IdxType x = 0; x < height; x++) {
+                new_phi[x + y * height + z * height * width] = box.grid3d->phi[box.grid3d->Index(x, y, z)];
+            }
+        }
+    }
+    vtkSmartPointer<vtkFloatArray> phi_arr = vtkSmartPointer<vtkFloatArray>::New();
+    phi_arr->SetArray(new_phi,total_num_points, 1);
+
+    auto phi_data = vtkSmartPointer<vtkImageData>::New();
+//    auto phi_data = vtkSmartPointer<vtkImageImport>::New();
+    phi_data->GetPointData()->SetScalars(phi_arr);
+    phi_data->SetDimensions(box.grid3d->length, box.grid3d->width, box.grid3d->height);
+    auto bound = box.Get_bound_coord();
+    phi_data->SetOrigin(bound[0].x, bound[0].y, bound[0].z);
+    phi_data->SetSpacing(box.resolution, box.resolution, box.resolution);
+
+//    for (int z = 0; z < box.grid3d->height; z++) {
+//        for (int y = 0; y < box.grid3d->width; y++) {
+//            for (int x = 0; x < box.grid3d->length; x++) {
+//                float *pixel = static_cast<float *>(phi_data->GetScalarPointer(x, y, z));
+//                cout << pixel[0] << " ";
+//            }
+//            cout << endl;
+//        }
+//        cout << endl;
+//    }
+//    auto phi_data = vtkSmartPointer<vtkImageData>::New();
+//    CreateData(phi_data);
+//    phi_data->SetSpacing(1, 1, 1);
+
+//    phi_data->CopyImportVoidPointer(box.grid3d->phi.data(), total_num_points * sizeof(dtype) / sizeof(unsigned char));
+//    phi_data->SetWholeExtent(0, box.grid3d->height - 1, 0, box.grid3d->width - 1, 0, box.grid3d->length - 1);
+//    cout << phi_data->GetWholeExtent()[1] << endl;
+//    phi_data->SetDataSpacing(box.resolution, box.resolution, box.resolution);
+//    phi_data->SetDataOrigin(bound[0].x, bound[0].y, bound[0].z);
+//    phi_data->SetDataExtentToWholeExtent();
+//    phi_data->SetDataScalarTypeToFloat();
+//    phi_data->SetNumberOfScalarComponents(1);
+//    cout << phi_data->GetNumberOfScalarComponents() << endl;
+    //    phi_data->Update();
+//    for (int z = 0; z < box.grid3d->height; z++) {
+//        for (int y = 0; y < box.grid3d->width; y++) {
+//            for (int x = 0; x < box.grid3d->length; x++) {
+//                float *pixel = static_cast<float *>(phi_data->GetImportVoidPointer());
+//                cout << pixel[x + y * box.grid3d->length + z * box.grid3d->length * box.grid3d->width] << " ";
+//            }
+//            cout << endl;
+//        }
+//        cout << endl;
+//    }
+
+
+    auto isosurface = vtkSmartPointer<vtkMarchingCubes>::New();
+    isosurface->SetInputData(phi_data);
+    isosurface->ComputeGradientsOn();
+    isosurface->ComputeNormalsOn();
+    isosurface->ComputeScalarsOn();
+    isosurface->SetValue(0, level_set_val);
+
+    auto surface_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    surface_mapper->SetInputConnection(isosurface->GetOutputPort());
+    surface_mapper->ScalarVisibilityOn();
+
+    auto surface_actor = vtkSmartPointer<vtkActor>::New();
+    surface_actor->SetMapper(surface_mapper);
+
+    return surface_actor;
 }
 
 void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
@@ -90,6 +191,7 @@ void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
     axes->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
     ren->AddActor(axes);
 
+    ren->AddActor(Render_surface(box, 0));
     ren->AddActor(assembly);
     ren->SetBackground(colors->GetColor3d("Silver").GetData());
     renw->AddRenderer(ren);

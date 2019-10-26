@@ -96,4 +96,9 @@ public:
     unsigned long Index(IdxType i, IdxType j, IdxType k);
 };
 
+
+inline unsigned long Grid3d::Index(IdxType i, IdxType j, IdxType k)
+{
+    return i * this->width * this->height + j * this->height + k;
+}
 #endif //VMVS_GRID3D_H

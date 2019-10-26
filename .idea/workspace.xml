@@ -13,23 +13,16 @@
   <component name="ChangeListManager">
     <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="2D case completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile2" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/DependInfo.cmake" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/build.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/cmake_clean.cmake" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/link.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/progress.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/progress.marks" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/VMVS.cbp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/base.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/base.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/grid2d.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/grid3d.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/grid3d.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/display.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/grid2d.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/grid3d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid3d.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/init.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -43,6 +36,12 @@
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
+    <option name="PUSH_TAGS">
+      <GitPushTagMode>
+        <option name="argument" value="--follow-tags" />
+        <option name="title" value="Current Branch" />
+      </GitPushTagMode>
+    </option>
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
@@ -125,7 +124,8 @@
       <workItem from="1571950125073" duration="704000" />
       <workItem from="1571954794269" duration="735000" />
       <workItem from="1571964778839" duration="892000" />
-      <workItem from="1572006049584" duration="15954000" />
+      <workItem from="1572006049584" duration="25412000" />
+      <workItem from="1572044731283" duration="14321000" />
     </task>
     <task id="LOCAL-00001" summary="Second Commit">
       <created>1570199633829</created>
@@ -169,7 +169,14 @@
       <option name="project" value="LOCAL" />
       <updated>1571368953688</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="3D case initialize">
+      <created>1572032651973</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1572032651973</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -189,11 +196,42 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="Second Commit" />
     <MESSAGE value="partially completed. Still under change" />
     <MESSAGE value="2D case completed" />
     <MESSAGE value="Changed 2d array to 1d and updated the algorithm." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed 2d array to 1d and updated the algorithm." />
+    <MESSAGE value="3D case initialize" />
+    <option name="LAST_COMMIT_MESSAGE" value="3D case initialize" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/init.cpp</url>
+          <line>194</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/main.cpp</url>
+          <line>33</line>
+          <option name="timeStamp" value="5" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/display.cpp</url>
+          <line>59</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/display.cpp</url>
+          <line>111</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/display.cpp</url>
+          <line>120</line>
+          <option name="timeStamp" value="9" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
