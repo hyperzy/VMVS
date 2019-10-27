@@ -189,44 +189,56 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     auto nx = (DimUnit)((extent[1] - extent[0]) / box.resolution);
     auto ny = (DimUnit)((extent[3] - extent[2]) / box.resolution);
     auto nz = (DimUnit)((extent[5] - extent[4]) / box.resolution);
+    vector<Point3> bound_coord = box.Get_bound_coord();
+    Point3 origin = bound_coord[0];
+    dtype resolution = box.resolution;
     box.grid3d = new Grid3d(nx, ny, nz);
+    box.grid3d->coord.resize(nx * ny * nz);
 //    box.grid3d = new Grid3d(20, 20, 20);
     Grid3d *&grid = box.grid3d;
-    IdxType center_i = grid->length / 2;
-    IdxType center_j = grid->width / 2;
-    IdxType center_k = grid->height / 2;
-#pragma omp parallel for default(none) shared(center_i, center_j, center_k, grid, radius)
-    for (IdxType i = 0; i < grid->length; ++i) {
-        for (IdxType j = 0; j < grid->width; ++j) {
+    IdxType center_i = grid->_height / 2;
+    IdxType center_j = grid->_width / 2;
+    IdxType center_k = grid->_depth / 2;
+    auto time_start = omp_get_wtime();
+#pragma omp parallel for default(none) shared(center_i, center_j, center_k, grid, radius, origin, resolution)
+    for (IdxType i = 0; i < grid->_height; ++i) {
+        for (IdxType j = 0; j < grid->_width; ++j) {
             bool flag_interior = false;
             IdxType start = 0, end = 0;
-            for (IdxType k = 0; k < grid->height; ++k) {
+            for (IdxType k = 0; k < grid->_depth; ++k) {
                 grid->phi[grid->Index(i, j, k)] = sqrt(pow(i - center_i, 2)
                                                        + pow(j - center_j, 2)
                                                        + pow(k - center_k, 2)) - radius;
-//                grid->phi[grid->Index(i, j, k)] = max(max(abs(i - center_i), abs(j - center_j)), abs(k - center_k));
-//                if (!flag_interior) {start = k, end = k;}
-//                else { end = k;}
-//                auto absolute_val = abs(grid->phi[grid->Index(i, j, k)]);
-//                auto &nb_status = grid->grid_prop[grid->Index(i, j, k)].nb_status;
-//                if (absolute_val <= grid->boundary_distance) {
-//                    flag_interior = true;
-//                    grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
-//                    grid->band_end_i = i > grid->band_end_i ? i : grid->band_end_i;
-//                    grid->band_begin_j = j < grid->band_begin_j ? j : grid->band_begin_j;
-//                    grid->band_end_j = j > grid->band_end_j ? j : grid->band_end_j;
-//
-//                    if (absolute_val <= grid->active_distance) { nb_status = NarrowBandStatus::ACTIVE;}
-//                    else if (absolute_val <= grid->landmine_distance) { nb_status = NarrowBandStatus::LANDMINE;}
-//                    else {nb_status = NarrowBandStatus::BOUNDARY;}
-//                }
-//                else { flag_interior = false;}
-//
-//                if (start != end && !flag_interior) {
-//                    grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
-//                }
+                auto &point_coord = grid->coord[grid->Index(i, j, k)];
+                point_coord.x = origin.x + i * resolution;
+                point_coord.y = origin.y + j * resolution;
+                point_coord.z = origin.z + k * resolution;
+                if (!flag_interior) {start = k, end = k;}
+                else { end = k;}
+                auto absolute_val = abs(grid->phi[grid->Index(i, j, k)]);
+                auto &nb_status = grid->grid_prop[grid->Index(i, j, k)].nb_status;
+                if (absolute_val <= grid->boundary_distance) {
+                    flag_interior = true;
+                    grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
+                    grid->band_end_i = i > grid->band_end_i - 1 ? i : grid->band_end_i;
+                    grid->band_begin_j = j < grid->band_begin_j ? j : grid->band_begin_j;
+                    grid->band_end_j = j > grid->band_end_j - 1 ? j : grid->band_end_j;
+
+                    if (absolute_val <= grid->active_distance) { nb_status = NarrowBandStatus::ACTIVE;}
+                    else if (absolute_val <= grid->landmine_distance) { nb_status = NarrowBandStatus::LANDMINE;}
+                    else {nb_status = NarrowBandStatus::BOUNDARY;}
+                }
+                else { flag_interior = false;}
+
+                if (start != end && !flag_interior) {
+                    grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
+                }
             }
         }
     }
 #pragma omp barrier
+    cout << omp_get_wtime() -time_start << endl;
+    auto new_grid3d = FMM3d(grid, true);
+    delete grid;
+    box.grid3d = new_grid3d;
 }

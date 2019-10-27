@@ -17,10 +17,8 @@
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/grid2d.h" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/include/grid3d.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/grid3d.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/display.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/grid2d.cpp" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/grid3d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid3d.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/init.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
@@ -56,6 +54,7 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/include" />
       <recent name="$PROJECT_DIR$/src" />
     </key>
@@ -125,7 +124,9 @@
       <workItem from="1571954794269" duration="735000" />
       <workItem from="1571964778839" duration="892000" />
       <workItem from="1572006049584" duration="25412000" />
-      <workItem from="1572044731283" duration="14321000" />
+      <workItem from="1572044731283" duration="15176000" />
+      <workItem from="1572098790040" duration="23367000" />
+      <workItem from="1572143719439" duration="458000" />
     </task>
     <task id="LOCAL-00001" summary="Second Commit">
       <created>1570199633829</created>
@@ -176,7 +177,14 @@
       <option name="project" value="LOCAL" />
       <updated>1572032651973</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="rendering finished">
+      <created>1572063246004</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1572063246004</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -196,26 +204,18 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
     <MESSAGE value="Second Commit" />
     <MESSAGE value="partially completed. Still under change" />
     <MESSAGE value="2D case completed" />
     <MESSAGE value="Changed 2d array to 1d and updated the algorithm." />
     <MESSAGE value="3D case initialize" />
-    <option name="LAST_COMMIT_MESSAGE" value="3D case initialize" />
+    <MESSAGE value="rendering finished" />
+    <option name="LAST_COMMIT_MESSAGE" value="rendering finished" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/init.cpp</url>
-          <line>194</line>
-          <option name="timeStamp" value="4" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/main.cpp</url>
-          <line>33</line>
-          <option name="timeStamp" value="5" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
           <line>59</line>
@@ -223,13 +223,33 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>111</line>
+          <line>112</line>
           <option name="timeStamp" value="8" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>120</line>
+          <line>121</line>
           <option name="timeStamp" value="9" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>62</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/init.cpp</url>
+          <line>239</line>
+          <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>247</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>176</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -58,7 +58,7 @@ struct PointProperty {
     int extension_status;
 };
 
-struct IndexPair {
+struct IndexSet {
     IdxType i, j, k;
 };
 
@@ -77,28 +77,99 @@ public:
      * @param width Size along y axis.
      * @param height Size along z axis.
      */
-    Grid3d(DimUnit length, DimUnit width, DimUnit height);
+    Grid3d(DimUnit height, DimUnit width, DimUnit depth);
     std::vector<PointProperty> grid_prop;
     std::vector<dtype> phi;
     // normal velocity
     std::vector<dtype> velocity;
     std::vector<std::vector<std::list<NarrowBandExtent>>> narrow_band;
-    std::vector<IndexPair> front;
+    std::vector<IndexSet> front;
     // keep record of marching sequence to iterate it again to do extension
-    std::vector<IndexPair> marching_sequence;
+    std::vector<IndexSet> marching_sequence;
     std::vector<Point3> coord;
     dtype active_distance;
     dtype landmine_distance;
     dtype boundary_distance;
-    const DimUnit length, width, height;
+    const DimUnit _height, _width, _depth;
     IdxType band_begin_i, band_end_i, band_begin_j, band_end_j;
     // inline function to compute location
-    unsigned long Index(IdxType i, IdxType j, IdxType k);
+    unsigned long Index(IdxType i, IdxType j, IdxType k) const;
+    bool isValidRange(IdxType i, IdxType j, IdxType k) const;
+
+    /**
+     * For now LANDMINE is considered, but actually it seems that we dont need LANDMINE since these will never
+     * when evolving.
+     * This data structure is arranged as a list consisting of one or more nodes. For each node, there is a
+     * 'start' and 'end' which is the index of a band interval, where 'end' is one more step of the last
+     * element of each band interval.
+     */
+    void Build_band();
+
+    /**
+     *  Construct a coarse narrow band (or say a roughly region that is active).
+     *  i, j and k are the current point index, I want to determine the range (from minimum to maximum column index) of
+     *  each row.
+     * @param i
+     * @param j
+     * @param k
+     */
+    void Build_coarse_band(IdxType i, IdxType j, IdxType k);
+
+    /**
+     *  Determine if the front is around this point( bottom, top, left, right, the front, back)
+     * @param i Height index
+     * @param j Width index
+     * @param k Depth index
+     * @return A binary number used to exam each bit.
+     */
+    unsigned short isFrontHere(IdxType i, IdxType j, IdxType k) const;
+
+
+
+    /**
+     *  Actually, maybe this method need to be taken apart for positive and negative since positive dont need to
+     *  log the ACCEPT index for negating numbers.
+     * @param close_set
+     * @param inside True for negative value (inside the surface). False otherwise.
+     */
+    void Marching(std::priority_queue<PointKeyVal> &close_set, bool inside);
+
+
+
+    void Extend_velocity();
+    void Extend_velocity(int fmm_status, IdxType i, IdxType j, IdxType k);
+    void Update_velocity();
+
+    Grid3d *Reinitialize();
 };
 
 
-inline unsigned long Grid3d::Index(IdxType i, IdxType j, IdxType k)
+inline unsigned long Grid3d::Index(IdxType i, IdxType j, IdxType k) const
 {
-    return i * this->width * this->height + j * this->height + k;
+    return i * this->_width * this->_depth + j * this->_depth + k;
 }
+
+/**
+ * @param initial_grid
+ * @param reinit True for re-initialization. False for not reinitialization
+ * @return
+ */
+Grid3d* FMM3d(Grid3d *initial_grid, bool reinit);
+
+/**
+ * The implementation of this function refers to original paper.
+ * @param old_grid
+ * @param new_grid
+ * @param i
+ * @param j
+ * @param k
+ * @param sign_changed
+ */
+void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid,
+                              IdxType i, IdxType j, IdxType k,
+                              unsigned short sign_changed);
+
+
+void Evolve(Grid3d *old_grid);
+
 #endif //VMVS_GRID3D_H

@@ -69,11 +69,12 @@ vtkSmartPointer<vtkActor> Construct_lineActor(const Point3 &p1, const Point3 &p2
 
 vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_set_val)
 {
-    auto total_num_points = box.grid3d->length * box.grid3d->width * box.grid3d->height;
+    auto total_num_points = box.grid3d->_height * box.grid3d->_width * box.grid3d->_depth;
+    assert (total_num_points > 0);
     dtype *new_phi = new dtype [total_num_points];
-    auto depth = box.grid3d->height;
-    auto width = box.grid3d->width;
-    auto height = box.grid3d->length;
+    auto depth = box.grid3d->_depth;
+    auto width = box.grid3d->_width;
+    auto height = box.grid3d->_height;
     //// change the storing order for vtk
 #pragma omp parallel for default(none) shared(depth, width, height, new_phi, box)
     for (IdxType z = 0; z < depth; z++) {
@@ -89,7 +90,7 @@ vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_se
     auto phi_data = vtkSmartPointer<vtkImageData>::New();
 //    auto phi_data = vtkSmartPointer<vtkImageImport>::New();
     phi_data->GetPointData()->SetScalars(phi_arr);
-    phi_data->SetDimensions(box.grid3d->length, box.grid3d->width, box.grid3d->height);
+    phi_data->SetDimensions(height, width, depth);
     auto bound = box.Get_bound_coord();
     phi_data->SetOrigin(bound[0].x, bound[0].y, bound[0].z);
     phi_data->SetSpacing(box.resolution, box.resolution, box.resolution);
@@ -134,7 +135,7 @@ vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_se
     isosurface->SetInputData(phi_data);
     isosurface->ComputeGradientsOn();
     isosurface->ComputeNormalsOn();
-    isosurface->ComputeScalarsOn();
+    isosurface->ComputeScalarsOff();
     isosurface->SetValue(0, level_set_val);
 
     auto surface_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();

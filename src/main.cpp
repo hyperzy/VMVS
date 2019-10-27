@@ -7,7 +7,7 @@
 #include <opencv2/highgui.hpp>
 
 #include "filesio.h"
-#include "testvtk.cpp"
+#include "../testvtk.cpp"
 
 using namespace cv;
 using namespace std;
