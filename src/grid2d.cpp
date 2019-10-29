@@ -47,7 +47,7 @@ Grid2d::Grid2d(unsigned short _height, unsigned short _width):
 void Grid2d::FMM_init()
 {
     ////  Part a. Initialize the shape. This part should be capsuled in another function.
-    dtype radius = 10;
+    dtype radius = 35;
     int center_i = this->height / 2;
     int center_j = this->width / 2;
 #pragma omp parallel for default(none) shared(center_i, center_j, radius)
@@ -329,7 +329,7 @@ void Grid2d::Approx_front()
 //    cout << mask_mat << endl;
     namedWindow("show front", 0);
     imshow("show front", out);
-    waitKey(0);
+    waitKey(1);
 
     for (unsigned long i = 0; i < this->height; i++) {
         delete [] mask[i];
@@ -536,7 +536,7 @@ void Grid2d::Extend_velocity()
         && this->grid[this->Index(iter.i, iter.j)].extension_status == ExtensionStatus::NATURAL) {
             dtype phi_x = (this->phi[this->Index(iter.i, iter.j + 1)] - this->phi[this->Index(iter.i, iter.j - 1)]) / 2;
             dtype phi_y = (this->phi[this->Index(iter.i + 1, iter.j)] - this->phi[this->Index(iter.i - 1, iter.j)]) / 2;
-            if (phi_x != 0 || phi_y != 0) {
+            if (phi_x != 0 && phi_y != 0) {
                 dtype phi_xx = this->phi[this->Index(iter.i, iter.j + 1)] + this->phi[this->Index(iter.i, iter.j - 1)] - 2 * this->phi[this->Index(iter.i, iter.j)];
                 dtype phi_yy = this->phi[this->Index(iter.i + 1, iter.j)] + this->phi[this->Index(iter.i - 1, iter.j)] - 2 * this->phi[this->Index(iter.i, iter.j)];
                 dtype phi_xy = (this->phi[this->Index(iter.i + 1, iter.j + 1)] - this->phi[this->Index(iter.i - 1, iter.j + 1)]
