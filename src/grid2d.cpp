@@ -536,7 +536,7 @@ void Grid2d::Extend_velocity()
         && this->grid[this->Index(iter.i, iter.j)].extension_status == ExtensionStatus::NATURAL) {
             dtype phi_x = (this->phi[this->Index(iter.i, iter.j + 1)] - this->phi[this->Index(iter.i, iter.j - 1)]) / 2;
             dtype phi_y = (this->phi[this->Index(iter.i + 1, iter.j)] - this->phi[this->Index(iter.i - 1, iter.j)]) / 2;
-            if (phi_x != 0 && phi_y != 0) {
+            if (phi_x != 0 || phi_y != 0) {
                 dtype phi_xx = this->phi[this->Index(iter.i, iter.j + 1)] + this->phi[this->Index(iter.i, iter.j - 1)] - 2 * this->phi[this->Index(iter.i, iter.j)];
                 dtype phi_yy = this->phi[this->Index(iter.i + 1, iter.j)] + this->phi[this->Index(iter.i - 1, iter.j)] - 2 * this->phi[this->Index(iter.i, iter.j)];
                 dtype phi_xy = (this->phi[this->Index(iter.i + 1, iter.j + 1)] - this->phi[this->Index(iter.i - 1, iter.j + 1)]
