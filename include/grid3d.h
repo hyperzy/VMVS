@@ -91,7 +91,8 @@ public:
     dtype landmine_distance;
     dtype boundary_distance;
     const DimUnit _height, _width, _depth;
-    IdxType band_begin_i, band_end_i, band_begin_j, band_end_j;
+    IdxType band_begin_i, band_end_i;
+    std::vector<IdxType> band_begin_j, band_end_j;
     // inline function to compute location
     unsigned long Index(IdxType i, IdxType j, IdxType k) const;
     bool isValidRange(IdxType i, IdxType j, IdxType k) const;
@@ -120,9 +121,10 @@ public:
      * @param i Height index
      * @param j Width index
      * @param k Depth index
-     * @return A binary number used to exam each bit.
+     * @param front_dir Direction where front lies
+     * @return True if the front is near the grid point.
      */
-    unsigned short isFrontHere(IdxType i, IdxType j, IdxType k) const;
+    bool isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir) const;
 
 
 
@@ -167,7 +169,7 @@ Grid3d* FMM3d(Grid3d *initial_grid, bool reinit);
  */
 void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid,
                               IdxType i, IdxType j, IdxType k,
-                              unsigned short sign_changed);
+                              std::vector<cv::Vec3i> &front_dir);
 
 
 void Evolve(Grid3d *old_grid);

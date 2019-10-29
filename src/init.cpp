@@ -221,8 +221,8 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
                     flag_interior = true;
                     grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
                     grid->band_end_i = i > grid->band_end_i - 1 ? i : grid->band_end_i;
-                    grid->band_begin_j = j < grid->band_begin_j ? j : grid->band_begin_j;
-                    grid->band_end_j = j > grid->band_end_j - 1 ? j : grid->band_end_j;
+                    grid->band_begin_j[i] = j < grid->band_begin_j[i] ? j : grid->band_begin_j[i];
+                    grid->band_end_j[i] = j > grid->band_end_j[i] - 1 ? j : grid->band_end_j[i];
 
                     if (absolute_val <= grid->active_distance) { nb_status = NarrowBandStatus::ACTIVE;}
                     else if (absolute_val <= grid->landmine_distance) { nb_status = NarrowBandStatus::LANDMINE;}

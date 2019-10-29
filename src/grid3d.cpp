@@ -30,8 +30,8 @@ Grid3d::Grid3d(DimUnit height, DimUnit width, DimUnit depth):
     for (auto &iter : this->narrow_band) {iter.resize(width);}
     this->band_begin_i = height;
     this->band_end_i = 0;
-    this->band_begin_j = width;
-    this->band_end_j = 0;
+    this->band_begin_j.resize(height, width);
+    this->band_end_j.resize(height, 0);
 }
 
 bool Grid3d::isValidRange(IdxType i, IdxType j, IdxType k) const
@@ -44,11 +44,11 @@ void Grid3d::Build_band()
 {
 //#pragma omp parallel for default(none)
     for (auto i = this->band_begin_i; i < this->band_end_i; i++) {
-        for (auto j = this->band_begin_j; j < this->band_end_j; j++) {
+        for (auto j = this->band_begin_j[i]; j < this->band_end_j[i]; j++) {
             bool flag_interior = false;
             IdxType  start = 0, end = 0;
             // the <= is crucial since the flag_interior is changed only when iterated outside the band.
-            for (auto k = this->narrow_band[i][j].front().start; k <= this->narrow_band[i][j].front().end; j++) {
+            for (auto k = this->narrow_band[i][j].front().start; k <= this->narrow_band[i][j].front().end; k++) {
                 if (!flag_interior) { start = k; end = k;}
                 else { end = k;}
                 flag_interior = this->grid_prop[this->Index(i, j, k)].nb_status != NarrowBandStatus::OUTSIDE;
@@ -59,8 +59,9 @@ void Grid3d::Build_band()
             // we need to pop the element recording the coarse narrow band
             this->narrow_band[i][j].pop_front();
         }
+        assert(this->band_begin_j[i] <= this->band_end_j[i]);
     }
-    assert(this->band_begin_j <= this->band_end_j && this->band_begin_i <= this->band_end_i);
+    assert(this->band_begin_i <= this->band_end_i);
 }
 
 void Grid3d::Build_coarse_band(IdxType i, IdxType j, IdxType k)
@@ -68,8 +69,8 @@ void Grid3d::Build_coarse_band(IdxType i, IdxType j, IdxType k)
     // end is one more step of the last element
     this->band_begin_i = i < this->band_begin_i ? i : this->band_begin_i;
     this->band_end_i = i > this->band_end_i - 1 ? i + 1 : this->band_end_i;
-    this->band_begin_j = j < this->band_begin_j ? j : this->band_begin_j;
-    this->band_end_j = j > this->band_end_j - 1 ? j + 1 : this->band_end_j;
+    this->band_begin_j[i] = j < this->band_begin_j[i] ? j : this->band_begin_j[i];
+    this->band_end_j[i] = j > this->band_end_j[i] - 1 ? j + 1 : this->band_end_j[i];
     if (!this->narrow_band[i][j].empty()) {
         auto &start = this->narrow_band[i][j].front().start;
         auto &end = this->narrow_band[i][j].front().end;
@@ -81,24 +82,39 @@ void Grid3d::Build_coarse_band(IdxType i, IdxType j, IdxType k)
     }
 }
 
-unsigned short Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k) const
+bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir) const
 {
-    unsigned short res = 0;
+//    unsigned short res = 0;
+//    auto current_val = this->phi[this->Index(i, j, k)];
+//    res = (current_val * this->phi[this->Index(i - 1, j, k)] <= 0) |
+//            (current_val * this->phi[this->Index(i, j - 1, k)] <= 0) << 1u |
+//            (current_val * this->phi[this->Index(i + 1, j, k)] <= 0) << 2u |
+//            (current_val * this->phi[this->Index(i, j, k - 1)] <= 0) << 3u |
+//            (current_val * this->phi[this->Index(i, j + 1, k)] <= 0) << 4u |
+//            (current_val * this->phi[this->Index(i, j, k + 1)] <= 0) << 5u;
+
+    bool is_front_here = false;
+    front_dir.clear();
     auto current_val = this->phi[this->Index(i, j, k)];
-    res = (current_val * this->phi[this->Index(i - 1, j, k)] <= 0) |
-            (current_val * this->phi[this->Index(i, j - 1, k)] <= 0) << 1u |
-            (current_val * this->phi[this->Index(i + 1, j, k)] <= 0) << 2u |
-            (current_val * this->phi[this->Index(i, j, k - 1)] <= 0) << 3u |
-            (current_val * this->phi[this->Index(i, j + 1, k)] <= 0) << 4u |
-            (current_val * this->phi[this->Index(i, j, k + 1)] <= 0) << 5u;
+    int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
+                       {0, -1, 0}, {0, 1, 0},
+                       {0, 0, -1}, {0, 0, 1}};
+    for (auto &iter : index) {
+        if (current_val * this->phi[this->Index(i + iter[0], j + iter[1], k + iter[2])] <= 0) {
+            front_dir.emplace_back(cv::Vec3i(iter[0], iter[1], iter[2]));
+            is_front_here = true;
+        }
+    }
+    return is_front_here;
 }
 
 void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
 {
     dtype speed = 1.0;
     dtype reciprocal = 1.0 / speed;
-    int index[6][3] = {{-1, 0, 0}, {0, -1, 0}, {1, 0, 0},
-                       {0, 0, -1}, {0, 1, 0}, {0, 0, 1}};
+    int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
+                       {0, -1, 0}, {0, 1, 0},
+                       {0, 0, -1}, {0, 0, 1}};
     vector<IndexSet> band_point_index;
     while (!close_set.empty()) {
         PointKeyVal point = close_set.top();
@@ -122,10 +138,10 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
             IdxType i = point.i + idx_iter[0];
             IdxType j = point.j + idx_iter[1];
             IdxType k = point.k + idx_iter[2];
-
+            auto idx_ijk = this->Index(i, j, k);
             // check necessity of the grid to be computed
-            if (this->isValidRange(i, j, k) && this->grid_prop[this->Index(i, j, k)].fmm_status != FMM_Status::ACCEPT
-                                            && this->grid_prop[this->Index(i, j, k)].fmm_status != FMM_Status::OTHER_SIDE) {
+            if (this->isValidRange(i, j, k) && this->grid_prop[idx_ijk].fmm_status != FMM_Status::ACCEPT
+                                            && this->grid_prop[idx_ijk].fmm_status != FMM_Status::OTHER_SIDE) {
                 // smaller value in x, y, z direction respectively
                 vector<dtype> smaller_val(3, 0);
                 smaller_val[0] = min(this->isValidRange(i - 1, j, k) ? this->phi[this->Index(i - 1, j, k)] : INF,
@@ -156,15 +172,15 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
                             - pow(b - a, 2))) / 3;
                 }
                 // store the minimum value
-                this->phi[this->Index(i, j, k)] = min(this->phi[this->Index(i, j, k)], temp);
+                this->phi[idx_ijk] = min(this->phi[idx_ijk], temp);
 
                 // FMM guarantee that the newly inserted value is larger than heap top element.
                 // this condition is in case of duplication
-                if (this->grid_prop[this->Index(i, j, k)].fmm_status != FMM_Status::CLOSE) {
-                    close_set.emplace(PointKeyVal{i, j, k, this->phi[this->Index(i, j, k)]});
-                    this->grid_prop[this->Index(i, j, k)].fmm_status = FMM_Status::CLOSE;
+                if (this->grid_prop[idx_ijk].fmm_status != FMM_Status::CLOSE) {
+                    close_set.emplace(PointKeyVal{i, j, k, this->phi[idx_ijk]});
+                    this->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
                 }
-                this->grid_prop[this->Index(i, j, k)].extension_status = ExtensionStatus::EXTENSION;
+                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
             }
         }
         this->grid_prop[this->Index(point.i, point.j, point.k)].fmm_status = FMM_Status::ACCEPT;
@@ -215,28 +231,30 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
         for (IdxType j = 0; j < width; j++) {
             for (auto const &iter : init_grid->narrow_band[i][j]) {
                 for (IdxType k = iter.start; k < iter.end; k++) {
-                    if (init_grid->grid_prop[init_grid->Index(i, j, k)].nb_status != NarrowBandStatus::BOUNDARY) {
-                        unsigned short sign_change = init_grid->isFrontHere(i, j, k);
-                        if (sign_change != 0) {
+                    auto idx_ijk = init_grid->Index(i, j, k);
+                    if (init_grid->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY) {
+                        // in 3-d case, we need to exam 6 directions
+                        vector<cv::Vec3i> front_dir(6);
+                        if (init_grid->isFrontHere(i, j, k, front_dir) != 0) {
                             //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
                             // narrowband status, phival, velocity
                             // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
-                            Determine_front_property(init_grid, new_grid, i, j, k, sign_change);
+                            Determine_front_property(init_grid, new_grid, i, j, k, front_dir);
                             // put >0 and  <0 into different set so that two direction fmm can be done.
-                            if (init_grid->phi[init_grid->Index(i, j, k)] > 0) {
-                                close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[new_grid->Index(i, j, k)]});
-                                new_grid->grid_prop[new_grid->Index(i, j, k)].fmm_status = FMM_Status::OTHER_SIDE;
+                            if (init_grid->phi[idx_ijk] > 0) {
+                                close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
+                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
                             }
-                            else if (init_grid->phi[init_grid->Index(i, j, k)] < 0) {
-                                close_pq_neg.emplace(PointKeyVal{i, j, k, new_grid->phi[new_grid->Index(i, j, k)]});
-                                new_grid->grid_prop[new_grid->Index(i, j, k)].fmm_status = FMM_Status::OTHER_SIDE;
+                            else if (init_grid->phi[idx_ijk] < 0) {
+                                close_pq_neg.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
+                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
                             }
                             else {
                                 new_grid->marching_sequence.emplace_back(IndexSet{i, j, k});
 //                                new_grid->front.emplace_back(IndexSet{i, j, k});
                             }
 //                            new_grid->front.emplace_back(IndexSet{i, j, k});
-                            new_grid->grid_prop[new_grid->Index(i, j, k)].extension_status = ExtensionStatus::NATURAL;
+                            new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
                         }
                     }
                 }
@@ -263,22 +281,238 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
     }
 }
 
-// Return value depending on the construction of 'sign_change'. Refer to function isFrontHere
-// For this program:
-// LSM {-1, 0, 0} {0, -1, 0} {1, 0, 0} { 0, 0, -1} {0, 1, 0} {0, 0, 1}
-void Determine_front_type(unsigned short sign_changed)
+// return the front type
+//// todo : design a data structure to store special points' index or normal points' index
+int Determine_front_type(std::vector<cv::Vec3i> &front_dir, std::vector<int> &special_grid_index)
 {
-    // first determine how many 1s 'sign_changed' has
-    // and it is definite that 'sign_changed' cannot be 0 or negative due to the caller location
-    unsigned short count = 0;
-    unsigned short param_copy = sign_changed;
-    // to be determined
-    bool var1, var2;
-    while (sign_changed) {}
+    cv::Vec3i sum(0, 0, 0);
+    int num_ones = 0;
+    for (const auto &iter : front_dir) sum += iter;
+    // non-zeros position of sum indicates the special grid point also has non-zero value at this position
+    vector<int> non_zero_pos(3);
+    for (IdxType i = 0; i < 3; i++) {
+        if (abs(sum[i]) == 1) {
+            num_ones++;
+            non_zero_pos.emplace_back(i);
+        }
+    }
+    switch (front_dir.size()) {
+        case 1 :
+            return FrontType::TYPE_A;
+        case 2:
+            if (num_ones == 2)
+                return TYPE_B1;
+            else
+                // num_ones == 0
+                return TYPE_B2;
+        case 3:
+            if (num_ones == 3)
+                return TYPE_C1;
+            else
+                // num_ones = 1
+                assert(num_ones == 1);
+                // todo: efficiency could be improved here. Maybe use hasp table and change the logic
+                // there should be only 1 non_zero_pos
+                assert(non_zero_pos.size() == 1);
+                for (const auto &iter_1 : non_zero_pos) {
+                    // 3 here is the size of front_dir
+                    for (int i = 0; i < 3; i++) {
+                        if (abs(front_dir[i][iter_1]) == 1)
+                            special_grid_index.emplace_back(i);
+                    }
+                }
+                return TYPE_C2;
+        case 4:
+            if (num_ones == 0)
+                return TYPE_D2;
+            else {
+                // num_ones == 2
+                assert(num_ones == 2);
+                assert(non_zero_pos.size() == 2);
+                for (const auto &iter_1 : non_zero_pos) {
+                    // 4 here is the size of front_dir
+                    for (int i = 0; i < 4; i++) {
+                        if (abs(front_dir[i][iter_1]) == 1)
+                            special_grid_index.emplace_back(i);
+                    }
+                }
+            }
+            return TYPE_D1;
+        case 5:
+            assert(num_ones == 1);
+            assert(non_zero_pos.size() == 1);
+            for (const auto &iter_1 : non_zero_pos) {
+                // 5 here is the size of front_dir
+                for (int i = 0; i < 5; i++) {
+                    if (abs(front_dir[i][iter_1]) == 1)
+                        special_grid_index.emplace_back(i);
+                }
+            }
+            return TYPE_E;
+        case 6:
+            assert(num_ones == 0);
+            return TYPE_F;
+    }
 }
 void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, IdxType j, IdxType k,
-                              unsigned short sign_changed)
+                              std::vector<cv::Vec3i> &front_dir)
 {
-
+    // first deal with phi = 0
+    auto idx_ijk = old_grid->Index(i, j, k);
+    if (old_grid->phi[idx_ijk] == 0) {
+        new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::ACCEPT;
+        new_grid->grid_prop[idx_ijk].nb_status = NarrowBandStatus::ACTIVE;
+        new_grid->phi[idx_ijk] = 0;
+        return;
+    }
+    vector<int> special_grid_index(2);
+    auto front_type = Determine_front_type(front_dir, special_grid_index);
+    dtype dist1, dist2, dist3, dist4, dist5, dist6, temp_dist1, temp_dist2, temp_dist3;
+    int s_index1, s_index2, r_index1, r_index2, r_index3, r_index4;
+    switch (front_type) {
+        // refer to head file for the definition of each type
+        case TYPE_A:
+            // use point-line distance for approximation
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk]
+                                              - old_grid->phi[old_grid->Index(i + front_dir[0][0],
+                                                                              j + front_dir[0][1],
+                                                                              k + front_dir[0][2])]);
+            new_grid->phi[idx_ijk] = dist1;
+            break;
+        case TYPE_B1:
+            // use point-line distance for approximation
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            new_grid->phi[idx_ijk] = sqrt(pow(dist1 * dist2, 2) / (pow(dist1, 2) + pow(dist2, 2)));
+            break;
+        case TYPE_B2:
+            // use point-line distance for approximation
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            new_grid->phi[idx_ijk] = min(dist1, dist2);
+            break;
+        case TYPE_C1:
+            // precisely compute point-surface distance
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            dist3 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[2][0],
+                                                                                                     j + front_dir[2][1],
+                                                                                                     k + front_dir[2][2])]);
+            new_grid->phi[idx_ijk] = sqrt(pow(dist1 * dist2 * dist3, 2) / (pow(dist1, 2) + pow(dist2, 2) + pow(dist3, 2)));
+            break;
+        case TYPE_C2:
+            // use point-line distance for approximation.
+            // In this case, we need to find the special grid point, which is the peak point of a triangle
+            // special point index
+            s_index1 = special_grid_index[0];
+            // regular point index
+            r_index1 = (s_index1 + 1) % 3;
+            r_index2 = (s_index1 - 1) % 3;
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist3 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            temp_dist1 = min(dist2, dist3);
+            new_grid->phi[idx_ijk] = sqrt(pow(dist1 * temp_dist1, 2) / (pow(dist1, 2) + pow(temp_dist1, 2)));
+            break;
+        case TYPE_D1:
+            // precisely compute point-surface distance
+            // In this case, we need to find two special grid points, which constitute common edge of two tetrahedrons
+            // special points index
+            s_index1 = special_grid_index[0];
+            s_index2 = special_grid_index[1];
+            // regular points' index
+            r_index1 = (s_index1 + 2) % 4;
+            r_index2 = (s_index2 + 2) % 4;
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[s_index2][0],
+                                                                                                     j + front_dir[s_index2][1],
+                                                                                                     k + front_dir[s_index2][2])]);
+            dist3 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist4 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            temp_dist1 = min(dist3, dist4);
+            new_grid->phi[idx_ijk] = sqrt(pow(dist1 * dist2 * temp_dist1, 2) / (pow(dist1, 2) + pow(dist2, 2) + pow(temp_dist1, 2)));
+            break;
+        case TYPE_E:
+            // precisely compute point-surface distance
+            s_index1 = special_grid_index[0];
+            r_index1 = (s_index1 + 1) % 5;
+            r_index2 = (s_index1 + 2) % 5;
+            r_index3 = (s_index1 + 3) % 5;
+            r_index4 = (s_index1 + 4) % 5;
+            // dist1 is the peak point of the large tetrahedron
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist3 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            dist4 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index3][0],
+                                                                                                     j + front_dir[r_index3][1],
+                                                                                                     k + front_dir[r_index3][2])]);
+            dist5 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[r_index4][0],
+                                                                                                     j + front_dir[r_index4][1],
+                                                                                                     k + front_dir[r_index4][2])]);
+            temp_dist1 = min(dist2, dist3);
+            temp_dist2 = min(dist4, dist5);
+            new_grid->phi[idx_ijk] = sqrt(pow(dist1 * temp_dist1 * temp_dist2, 2) /
+                                                  (pow(dist1, 2) + pow(temp_dist1, 2) + pow(temp_dist2, 2)));
+            break;
+        case TYPE_F:
+            // precisely compute point-surface distance
+            dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            dist3 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[2][0],
+                                                                                                     j + front_dir[2][1],
+                                                                                                     k + front_dir[2][2])]);
+            dist4 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[3][0],
+                                                                                                     j + front_dir[3][1],
+                                                                                                     k + front_dir[3][2])]);
+            dist5 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[4][0],
+                                                                                                     j + front_dir[4][1],
+                                                                                                     k + front_dir[4][2])]);
+            dist6 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[5][0],
+                                                                                                     j + front_dir[5][1],
+                                                                                                     k + front_dir[5][2])]);
+            temp_dist1 = min(dist1, dist2);
+            temp_dist2 = min(dist3, dist4);
+            temp_dist3 = min(dist5, dist6);
+            new_grid->phi[idx_ijk] = sqrt(pow(temp_dist1 * temp_dist2 * temp_dist3, 2) /
+                                                  (pow(temp_dist1, 2) + pow(temp_dist2, 2) + pow(temp_dist3, 2)));
+            break;
+        default:
+            cerr << "Wrong front type!" << endl;
+            exit(1);
+    }
 }
 
