@@ -6,6 +6,8 @@
 
 #include <iostream>
 #include <omp.h>
+#include <iomanip>
+#include <fstream>
 using namespace std;
 using namespace cv;
 
@@ -189,6 +191,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     auto nx = (DimUnit)((extent[1] - extent[0]) / box.resolution);
     auto ny = (DimUnit)((extent[3] - extent[2]) / box.resolution);
     auto nz = (DimUnit)((extent[5] - extent[4]) / box.resolution);
+//    nx = ny = nz = 33;
     vector<Point3> bound_coord = box.Get_bound_coord();
     Point3 origin = bound_coord[0];
     dtype resolution = box.resolution;
@@ -219,6 +222,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
                 auto &nb_status = grid->grid_prop[grid->Index(i, j, k)].nb_status;
                 if (absolute_val <= grid->boundary_distance) {
                     flag_interior = true;
+                    // build coarse band
                     grid->band_begin_i = i < grid->band_begin_i ? i : grid->band_begin_i;
                     grid->band_end_i = i > grid->band_end_i - 1 ? i : grid->band_end_i;
                     grid->band_begin_j[i] = j < grid->band_begin_j[i] ? j : grid->band_begin_j[i];
@@ -238,6 +242,22 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     }
 #pragma omp barrier
     cout << omp_get_wtime() -time_start << endl;
+    fstream fout("testdata.txt", ios::out);
+    for (int z = 0; z < grid->_depth; z++) {
+        fout << "z = " << z << endl;
+        for (int y = 0; y < grid->_height; y++)
+        {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+        fout << endl;
+        for (int x = 0; x < grid->_height; x++) {
+
+            for (int y = 0 ; y < grid->_width; y++) {
+                fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+            }
+            fout << endl;
+        }
+        fout << endl;
+    }
+    fout.close();
     auto new_grid3d = FMM3d(grid, true);
     delete grid;
     box.grid3d = new_grid3d;

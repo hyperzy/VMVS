@@ -3,6 +3,7 @@
 //
 
 #include "display.h"
+#include "evolution.h"
 #include <omp.h>
 
 #include <vtkAutoInit.h>
@@ -26,6 +27,8 @@ VTK_MODULE_INIT(vtkRenderingFreeType);
 #include <vtkCaptionActor2D.h>
 #include <vtkTextProperty.h>
 #include <vtkAxesActor.h>
+#include <vtkCommand.h>
+#include <vtkCallbackCommand.h>
 #include <vtkFloatArray.h>
 #include <vtkImageData.h>
 #include <vtkPointData.h>
@@ -66,6 +69,25 @@ vtkSmartPointer<vtkActor> Construct_lineActor(const Point3 &p1, const Point3 &p2
 //        }
 //    }
 //}
+
+/**
+ * transfrom c-order array into vtk-order
+ */
+void Transform_phi(const BoundingBox &box, dtype *new_phi)
+{
+    auto depth = box.grid3d->_depth;
+    auto width = box.grid3d->_width;
+    auto height = box.grid3d->_height;
+    //// change the storing order for vtk
+#pragma omp parallel for default(none) shared(depth, width, height, new_phi, box)
+    for (IdxType z = 0; z < depth; z++) {
+        for (IdxType y = 0; y < width; y++) {
+            for (IdxType x = 0; x < height; x++) {
+                new_phi[x + y * height + z * height * width] = box.grid3d->phi[box.grid3d->Index(x, y, z)];
+            }
+        }
+    }
+}
 
 vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_set_val)
 {
@@ -134,7 +156,7 @@ vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_se
     auto isosurface = vtkSmartPointer<vtkMarchingCubes>::New();
     isosurface->SetInputData(phi_data);
     isosurface->ComputeGradientsOn();
-    isosurface->ComputeNormalsOn();
+    isosurface->ComputeNormalsOff();
     isosurface->ComputeScalarsOff();
     isosurface->SetValue(0, level_set_val);
 
@@ -148,6 +170,171 @@ vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_se
     return surface_actor;
 }
 
+class vtkTimerCallback : public vtkCommand
+{
+public:
+    BoundingBox *p_box;
+    vector<Camera> *p_all_cams;
+    dtype *data;
+    vtkMarchingCubes *iso;
+    vtkPolyDataMapper *mapper;
+    vtkTimerCallback():p_box(nullptr), p_all_cams(nullptr) {}
+    static vtkTimerCallback* New()
+    {
+        vtkTimerCallback *cb = new vtkTimerCallback;
+        return cb;
+    }
+    virtual void Execute(vtkObject* caller, unsigned long eventId, void* vtkNotUsed(callData))
+    {
+        auto *iren = dynamic_cast<vtkRenderWindowInteractor *>(caller);
+        if (this->trigger_count != 0) {
+            assert(p_box != nullptr && p_all_cams != nullptr);
+            cout << this->trigger_count++ << " callback" << endl;
+            Evolve(*p_box, *p_all_cams);
+            Transform_phi(*p_box, data);
+            iso->Modified();
+            iren->GetRenderWindow()->Render();
+        }
+        else {
+            iren->GetRenderWindow()->Render();
+            this->trigger_count++;
+        }
+
+    }
+    void Set_data(BoundingBox &box, vector<Camera> &all_cams)
+    {
+        this->p_box = &box;
+        this->p_all_cams = &all_cams;
+    }
+
+private:
+    int trigger_count = 0;
+};
+
+void KeypressCallbackFunction ( vtkObject* caller, long unsigned int vtkNotUsed(eventId), void* vtkNotUsed(clientData), void* vtkNotUsed(callData) )
+{
+//    std::cout << "Keypress callback" << std::endl;
+
+    auto *iren = static_cast<vtkRenderWindowInteractor*>(caller);
+
+//    std::cout << "Pressed: " << iren->GetKeySym() << std::endl;
+    char *temp_key = iren->GetKeySym();
+    string key(temp_key);
+    if (key == "Return") {
+        iren->CreateRepeatingTimer(10);
+    }
+    else if (key == "p") {
+        iren->DestroyTimer();
+    }
+}
+
+#if USE_NEW
+void Show_3D(vector<Camera> &all_cams, BoundingBox &box)
+{
+    vtkSmartPointer<vtkNamedColors> colors = vtkSmartPointer<vtkNamedColors>::New();
+    vtkSmartPointer<vtkRenderer> ren = vtkSmartPointer<vtkRenderer>::New();
+    vtkSmartPointer<vtkRenderWindow> renw = vtkSmartPointer<vtkRenderWindow>::New();
+    vtkSmartPointer<vtkRenderWindowInteractor> iren = vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    vtkSmartPointer<vtkAssembly> assembly = vtkSmartPointer<vtkAssembly>::New();
+
+    for (auto &iter : all_cams) {
+        vtkSmartPointer<vtkCubeSource> cube = vtkSmartPointer<vtkCubeSource>::New();
+        cube->SetCenter(iter.t.at<dtype>(0, 0), iter.t.at<dtype>(0, 1), iter.t.at<dtype>(0, 2));
+        cube->SetXLength(0.5);
+        cube->SetYLength(0.5);
+        cube->SetZLength(0.5);
+        cube->Update();
+
+        vtkSmartPointer<vtkPolyDataMapper> cube_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+        cube_mapper->SetInputData(cube->GetOutput());
+        vtkSmartPointer<vtkActor> cube_actor = vtkSmartPointer<vtkActor>::New();
+        cube_actor->SetMapper(cube_mapper);
+        cube_actor->GetProperty()->SetColor((colors->GetColor3d("Tomato").GetData()));
+        assembly->AddPart(cube_actor);
+    }
+    vector<Point3> bound_coord = box.Get_bound_coord();
+    assembly->AddPart(Construct_lineActor(bound_coord[0], bound_coord[1]));
+    assembly->AddPart(Construct_lineActor(bound_coord[1], bound_coord[2]));
+    assembly->AddPart(Construct_lineActor(bound_coord[2], bound_coord[3]));
+    assembly->AddPart(Construct_lineActor(bound_coord[3], bound_coord[0]));
+    assembly->AddPart(Construct_lineActor(bound_coord[0], bound_coord[4]));
+    assembly->AddPart(Construct_lineActor(bound_coord[4], bound_coord[5]));
+    assembly->AddPart(Construct_lineActor(bound_coord[5], bound_coord[6]));
+    assembly->AddPart(Construct_lineActor(bound_coord[6], bound_coord[7]));
+    assembly->AddPart(Construct_lineActor(bound_coord[1], bound_coord[5]));
+    assembly->AddPart(Construct_lineActor(bound_coord[2], bound_coord[6]));
+    assembly->AddPart(Construct_lineActor(bound_coord[3], bound_coord[7]));
+    assembly->AddPart(Construct_lineActor(bound_coord[4], bound_coord[7]));
+
+    // add axes
+//    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New();
+//    axes->SetTotalLength(10, 10, 10);
+//    axes->GetXAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    axes->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    axes->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    ren->AddActor(axes);
+
+    // use marching cube to render surface
+    double level_val = 0;
+    auto total_num_points = box.grid3d->_height * box.grid3d->_width * box.grid3d->_depth;
+    assert (total_num_points > 0);
+    dtype *new_phi = new dtype [total_num_points];
+    auto depth = box.grid3d->_depth;
+    auto width = box.grid3d->_width;
+    auto height = box.grid3d->_height;
+    Transform_phi(box, new_phi);
+
+    vtkSmartPointer<vtkFloatArray> phi_arr = vtkSmartPointer<vtkFloatArray>::New();
+    phi_arr->SetArray(new_phi,total_num_points, 0);
+
+    auto phi_data = vtkSmartPointer<vtkImageData>::New();
+//    auto phi_data = vtkSmartPointer<vtkImageImport>::New();
+    phi_data->GetPointData()->SetScalars(phi_arr);
+    phi_data->SetDimensions(height, width, depth);
+    auto bound = box.Get_bound_coord();
+    phi_data->SetOrigin(bound[0].x, bound[0].y, bound[0].z);
+    phi_data->SetSpacing(box.resolution, box.resolution, box.resolution);
+
+    auto isosurface = vtkSmartPointer<vtkMarchingCubes>::New();
+    isosurface->SetInputData(phi_data);
+    isosurface->ComputeGradientsOff();
+    isosurface->ComputeNormalsOn();
+    isosurface->ComputeScalarsOff();
+    isosurface->SetValue(0, level_val);
+
+    auto surface_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    surface_mapper->SetInputConnection(isosurface->GetOutputPort());
+    surface_mapper->ScalarVisibilityOn();
+
+    auto surface_actor = vtkSmartPointer<vtkActor>::New();
+    surface_actor->SetMapper(surface_mapper);
+
+//    ren->AddActor(Render_surface(box, 0));
+    ren->AddActor(surface_actor);
+    ren->AddActor(assembly);
+    ren->SetBackground(colors->GetColor3d("Silver").GetData());
+    renw->AddRenderer(ren);
+    renw->SetSize(800, 800);
+    iren->SetRenderWindow(renw);
+    renw->Render();
+
+    iren->Initialize();
+
+    vtkSmartPointer<vtkCallbackCommand> keypressCallback =
+            vtkSmartPointer<vtkCallbackCommand>::New();
+    keypressCallback->SetCallback ( KeypressCallbackFunction );
+    iren->AddObserver(vtkCommand::KeyPressEvent, keypressCallback, 0);
+
+
+    auto cb = vtkSmartPointer<vtkTimerCallback>::New();
+    cb->Set_data(box, all_cams);
+    cb->data = new_phi;
+    cb->iso = isosurface;
+    iren->AddObserver(vtkCommand::TimerEvent, cb, 1.);
+//    iren->CreateRepeatingTimer(1000);
+    iren->Start();
+}
+#elif
 void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
 {
     vtkSmartPointer<vtkNamedColors> colors = vtkSmartPointer<vtkNamedColors>::New();
@@ -185,12 +372,13 @@ void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
     assembly->AddPart(Construct_lineActor(bound_coord[3], bound_coord[7]));
     assembly->AddPart(Construct_lineActor(bound_coord[4], bound_coord[7]));
 
-    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New();
-    axes->SetTotalLength(10, 10, 10);
-    axes->GetXAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
-    axes->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
-    axes->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
-    ren->AddActor(axes);
+    // add axes
+//    vtkSmartPointer<vtkAxesActor> axes = vtkSmartPointer<vtkAxesActor>::New();
+//    axes->SetTotalLength(10, 10, 10);
+//    axes->GetXAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    axes->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    axes->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
+//    ren->AddActor(axes);
 
     ren->AddActor(Render_surface(box, 0));
     ren->AddActor(assembly);
@@ -199,7 +387,8 @@ void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
     renw->SetSize(800, 800);
     iren->SetRenderWindow(renw);
     renw->Render();
+
+
     iren->Start();
-
 }
-
+#endif

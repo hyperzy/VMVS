@@ -139,7 +139,6 @@ public:
 
 
     void Extend_velocity();
-    void Extend_velocity(int fmm_status, IdxType i, IdxType j, IdxType k);
     void Update_velocity();
 
     Grid3d *Reinitialize();
@@ -171,7 +170,5 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid,
                               IdxType i, IdxType j, IdxType k,
                               std::vector<cv::Vec3i> &front_dir);
 
-
-void Evolve(Grid3d *old_grid);
 
 #endif //VMVS_GRID3D_H
