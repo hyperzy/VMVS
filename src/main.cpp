@@ -32,10 +32,10 @@ int main() {
     radius = 7 / 1;
     BoundingBox box(all_cams1, 0.4);
     box.Init();
-    Init_sphere_shape(box, 15);
+    Init_sphere_shape(box, 10);
 
     Show_3D(all_cams1, box);
-//    Evolve(box, all_cams1);
+    Evolve(box, all_cams1);
 //    testvtk();
 ////2d test)
 /*

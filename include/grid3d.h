@@ -86,7 +86,7 @@ public:
     std::vector<IndexSet> front;
     // keep record of marching sequence to iterate it again to do extension
     std::vector<IndexSet> marching_sequence;
-    std::vector<Point3> coord;
+    std::vector<Vec3> coord;
     dtype active_distance;
     dtype landmine_distance;
     dtype boundary_distance;

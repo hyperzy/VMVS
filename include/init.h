@@ -10,6 +10,7 @@
 
 #include "base.h"
 #include "grid3d.h"
+#include "visibility.h"
 
 enum Direction {
     TOP,
@@ -22,10 +23,8 @@ enum Direction {
 class BoundingBox {
 private:
     // [xmin, xmax, ymin, ymax, zmin, zmax]
-    std::vector<dtype> __extents;
     //
     std::vector<Point3> __bound_coord;
-    const std::vector<Camera> &__all_cams;
 
 
     /** Computing back projection plane represented by two lines (since two lines compose a plane).
@@ -62,6 +61,10 @@ public:
     explicit BoundingBox(const std::vector<Camera> &all_cams, dtype resolution);
     Grid3d *grid3d;
     const dtype resolution;
+    std::vector<Visibility> visibility_arr;
+    const std::vector<Camera> &__all_cams;
+    std::vector<dtype> __extents;
+
     /**
      * @brief Determine the bounding box coordinates and
      */

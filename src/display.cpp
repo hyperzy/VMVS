@@ -32,9 +32,13 @@ VTK_MODULE_INIT(vtkRenderingFreeType);
 #include <vtkFloatArray.h>
 #include <vtkImageData.h>
 #include <vtkPointData.h>
+#include <vtkPoints.h>
+#include <vtkCellArray.h>
 #include <vtkMarchingCubes.h>
 #include <vtkImageImport.h>
 #include <iostream>
+
+#include <vtkLineSource.h>
 
 using namespace std;
 
@@ -156,7 +160,7 @@ vtkSmartPointer<vtkActor> Render_surface(const BoundingBox &box, double level_se
     auto isosurface = vtkSmartPointer<vtkMarchingCubes>::New();
     isosurface->SetInputData(phi_data);
     isosurface->ComputeGradientsOn();
-    isosurface->ComputeNormalsOff();
+    isosurface->ComputeNormalsOn();
     isosurface->ComputeScalarsOff();
     isosurface->SetValue(0, level_set_val);
 
@@ -177,7 +181,9 @@ public:
     vector<Camera> *p_all_cams;
     dtype *data;
     vtkMarchingCubes *iso;
-    vtkPolyDataMapper *mapper;
+    vtkPoints *points;
+    vtkCellArray *vertices;
+    vtkPolyDataMapper *pt_mapper;
     vtkTimerCallback():p_box(nullptr), p_all_cams(nullptr) {}
     static vtkTimerCallback* New()
     {
@@ -193,6 +199,8 @@ public:
             Evolve(*p_box, *p_all_cams);
             Transform_phi(*p_box, data);
             iso->Modified();
+
+//            pt_mapper->Modified();
             iren->GetRenderWindow()->Render();
         }
         else {
@@ -309,6 +317,33 @@ void Show_3D(vector<Camera> &all_cams, BoundingBox &box)
     auto surface_actor = vtkSmartPointer<vtkActor>::New();
     surface_actor->SetMapper(surface_mapper);
 
+    // render nonvisible point
+    auto points = vtkSmartPointer<vtkPoints>::New();
+    auto vertices = vtkSmartPointer<vtkCellArray>::New();
+    auto pt_polydata = vtkSmartPointer<vtkPolyData>::New();
+    pt_polydata->SetPoints(points);
+    pt_polydata->SetVerts(vertices);
+    auto pt_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    pt_mapper->SetInputData(pt_polydata);
+    auto pt_actor = vtkSmartPointer<vtkActor>::New();
+    const auto &grid3d = box.grid3d;
+    for (IdxType i = 0; i < box.grid3d->_height; i++) {
+        for (IdxType j = 0; j < box.grid3d->_width; j++) {
+            for (IdxType k = 0; k < box.grid3d->_depth; k++) {
+                if (box.visibility_arr[0].psi[box.visibility_arr[0].Index(i, j, k)] < 0) {
+                    const auto &p = grid3d->coord[grid3d->Index(i, j, k)];
+                    auto id = points->InsertNextPoint(p.val);
+                    vertices->InsertNextCell(1);
+                    vertices->InsertCellPoint(id);
+                }
+            }
+        }
+    }
+    pt_actor->SetMapper(pt_mapper);
+    pt_actor->GetProperty()->SetColor(255, 0, 0);
+
+    ren->AddActor(pt_actor);
+
 //    ren->AddActor(Render_surface(box, 0));
     ren->AddActor(surface_actor);
     ren->AddActor(assembly);
@@ -330,11 +365,14 @@ void Show_3D(vector<Camera> &all_cams, BoundingBox &box)
     cb->Set_data(box, all_cams);
     cb->data = new_phi;
     cb->iso = isosurface;
+    cb->points = points;
+    cb->vertices = vertices;
+    cb->pt_mapper = pt_mapper;
     iren->AddObserver(vtkCommand::TimerEvent, cb, 1.);
 //    iren->CreateRepeatingTimer(1000);
     iren->Start();
 }
-#elif
+#else
 void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
 {
     vtkSmartPointer<vtkNamedColors> colors = vtkSmartPointer<vtkNamedColors>::New();
@@ -379,6 +417,44 @@ void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
 //    axes->GetYAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
 //    axes->GetZAxisCaptionActor2D()->GetCaptionTextProperty()->SetFontSize(1);
 //    ren->AddActor(axes);
+
+    // render nonvisible point
+    auto points = vtkSmartPointer<vtkPoints>::New();
+    auto vertices = vtkSmartPointer<vtkCellArray>::New();
+    auto pt_polydata = vtkSmartPointer<vtkPolyData>::New();
+    pt_polydata->SetPoints(points);
+    pt_polydata->SetVerts(vertices);
+    auto pt_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+    pt_mapper->SetInputData(pt_polydata);
+    auto pt_actor = vtkSmartPointer<vtkActor>::New();
+    const auto &grid3d = box.grid3d;
+    for (IdxType i = 0; i < box.grid3d->_height; i++) {
+        for (IdxType j = 0; j < box.grid3d->_width; j++) {
+            for (IdxType k = 0; k < box.grid3d->_depth; k++) {
+                if (box.visibility_arr[7].psi[box.visibility_arr[0].Index(i, j, k)] < 0) {
+                    const auto &p = grid3d->coord[grid3d->Index(i, j, k)];
+                    auto id = points->InsertNextPoint(p.val);
+                    vertices->InsertNextCell(1);
+                    vertices->InsertCellPoint(id);
+                }
+            }
+        }
+    }
+    pt_actor->SetMapper(pt_mapper);
+    pt_actor->GetProperty()->SetColor(255, 0, 0);
+
+//    auto line = vtkSmartPointer<vtkLineSource>::New();
+//    Vec3 cam(all_cams[0].t);
+//    line->SetPoint1(cam.val);
+//    line->SetPoint2(grid3d->coord[grid3d->Index(grid3d->_height / 4 * 3 - 2, grid3d->_width - 37, grid3d->_depth / 2 )].val);
+//    auto line_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+//    line_mapper->SetInputConnection(line->GetOutputPort());
+//    auto line_actor = vtkSmartPointer<vtkActor>::New();
+//    line_actor->SetMapper(line_mapper);
+//    line_actor->GetProperty()->SetColor(0, 1, 0);
+//    ren->AddActor(line_actor);
+
+    ren->AddActor(pt_actor);
 
     ren->AddActor(Render_surface(box, 0));
     ren->AddActor(assembly);

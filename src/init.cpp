@@ -69,7 +69,7 @@ void BoundingBox::Init() {
 
 BoundingBox::BoundingBox(const std::vector<Camera> &all_cams,
                         dtype resolution):__all_cams(all_cams), resolution(resolution) {
-
+    visibility_arr.reserve(all_cams.size());
 }
 
 Point3 BoundingBox::Compute_intersection(const Camera &cam1, const Camera &cam2,
@@ -197,6 +197,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     dtype resolution = box.resolution;
     box.grid3d = new Grid3d(nx, ny, nz);
     box.grid3d->coord.resize(nx * ny * nz);
+
 //    box.grid3d = new Grid3d(20, 20, 20);
     Grid3d *&grid = box.grid3d;
     IdxType center_i = grid->_height / 2;
@@ -213,9 +214,9 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
                                                        + pow(j - center_j, 2)
                                                        + pow(k - center_k, 2)) - radius;
                 auto &point_coord = grid->coord[grid->Index(i, j, k)];
-                point_coord.x = origin.x + i * resolution;
-                point_coord.y = origin.y + j * resolution;
-                point_coord.z = origin.z + k * resolution;
+                point_coord[0] = origin.x + i * resolution;
+                point_coord[1] = origin.y + j * resolution;
+                point_coord[2] = origin.z + k * resolution;
                 if (!flag_interior) {start = k, end = k;}
                 else { end = k;}
                 auto absolute_val = abs(grid->phi[grid->Index(i, j, k)]);
@@ -258,7 +259,21 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
         fout << endl;
     }
     fout.close();
+
+    auto &coord = box.grid3d->coord;
+
     auto new_grid3d = FMM3d(grid, true);
     delete grid;
     box.grid3d = new_grid3d;
+    //// initial visibility array
+    for (int i = 0; i < box.__all_cams.size(); i++) {
+        box.visibility_arr.emplace_back(Visibility(box.__extents, box.__all_cams[i], box.grid3d->coord, resolution,
+                                                   box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth));
+    }
+////#pragma omp parallel for default(none) shared(box)
+    for (int i = 0; i < box.visibility_arr.size(); i++) {
+        box.visibility_arr[i].Set_phi(box.grid3d->phi);
+        box.visibility_arr[i].Calculate_all();
+    }
+//#pragma omp barrier
 }
