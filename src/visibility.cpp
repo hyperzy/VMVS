@@ -55,8 +55,8 @@ int Visibility::Determine_direction() const
     Vec3 normalC(-1, -1, 0);
     Vec3 normalD(1, 0, 0);
 
-    cout << cam_coord << endl;
-    cout << camera.t << endl;
+//    cout << cam_coord << endl;
+//    cout << camera.t << endl;
     /*
      *     \          /
      *      \   3    /
@@ -670,7 +670,7 @@ dtype Visibility::Interpolation(const Vec3 &intersect_point, const unsigned long
               / denominator;
     }
     else if (direction == PlaneDirection::XY_POS || direction == PlaneDirection::XY_NEG) {
-        assert(p1_coord[1] != p3_coord[1] && p1_coord[2] != p3_coord[2]);
+        assert(p1_coord[1] != p3_coord[1] && p1_coord[0] != p3_coord[0]);
         denominator = (p3_coord[1] - p1_coord[1]) * (p3_coord[0] - p1_coord[0]);
         val = ((p3_coord[1] - intersect_point[1]) * (p1 * (p3_coord[0] - intersect_point[0]) + p2 * (intersect_point[0] - p1_coord[0]))
                + (intersect_point[1] - p1_coord[1]) * (p3 * (intersect_point[0] - p1_coord[0]) + p4 * (p3_coord[0] - intersect_point[0])))
