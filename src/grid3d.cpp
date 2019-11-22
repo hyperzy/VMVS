@@ -5,6 +5,7 @@
 #include "grid3d.h"
 #include <omp.h>
 #include <queue>
+//#define NDEBUG
 #include <cassert>
 #include <algorithm>
 #include <cmath>
@@ -25,7 +26,8 @@ Grid3d::Grid3d(DimUnit height, DimUnit width, DimUnit depth):
     unsigned long total_num = height * width * depth;
     this->grid_prop.resize(total_num);
     this->phi.resize(total_num, INF);
-    this->velocity.resize(total_num, 0);
+//    this->velocity.resize(total_num, 0);
+    this->Phi.resize(total_num, 0);
     this->narrow_band.resize(height);
     for (auto &iter : this->narrow_band) {iter.resize(width);}
     this->band_begin_i = height;
@@ -33,6 +35,8 @@ Grid3d::Grid3d(DimUnit height, DimUnit width, DimUnit depth):
     this->band_begin_j.resize(height, width);
     this->band_end_j.resize(height, 0);
     this->coord.resize(total_num);
+//    this->velocity2.resize(total_num, 0);
+//    this->d_Phi.resize(total_num, 0);
 }
 
 bool Grid3d::isValidRange(IdxType i, IdxType j, IdxType k) const
@@ -51,7 +55,8 @@ void Grid3d::Build_band()
                 bool flag_interior = false;
                 IdxType start = 0, end = 0;
                 // the <= is crucial since the flag_interior is changed only when iterated outside the band.
-                for (auto k = this->narrow_band[i][j].front().start; k <= this->narrow_band[i][j].front().end; k++) {
+                // bug fixed. no need for <=. In added another condition
+                for (auto k = this->narrow_band[i][j].front().start; k < this->narrow_band[i][j].front().end; k++) {
                     if (!flag_interior) {
                         start = k;
                         end = k;
@@ -61,6 +66,10 @@ void Grid3d::Build_band()
                     flag_interior = this->grid_prop[this->Index(i, j, k)].nb_status != NarrowBandStatus::OUTSIDE;
                     if (start != end && !flag_interior) {
                         this->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
+                    }
+                    else if (k == this->narrow_band[i][j].front().end - 1 && flag_interior) {
+                        // todo: wrong here
+                        this->narrow_band[i][j].emplace_back(NarrowBandExtent{start, IdxType(k + 1)});
                     }
                 }
                 // we need to pop the element recording the coarse narrow band
@@ -196,7 +205,7 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
                     close_set.emplace(PointKeyVal{i, j, k, this->phi[idx_ijk]});
                     this->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
                 }
-                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
+                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
             }
         }
         assert(isValidRange(point.i, point.j, point.k));
@@ -217,7 +226,6 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
 
 void Grid3d::Extend_velocity()
 {
-//#pragma omp parallel for default (none)
     for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
         auto &iter = this->marching_sequence[idx];
         IdxType i = iter.i;
@@ -257,10 +265,10 @@ void Grid3d::Extend_velocity()
                                             - 2 * phi_x * phi_z * phi_xz
                                             - 2 * phi_y * phi_z * phi_yz)
                                            / (pow(phi_x * phi_x + phi_y * phi_y + phi_z * phi_z, 1.5));
-                this->velocity[idx_ijk] = val;
+                this->Phi[idx_ijk] = val;
             }
             else {
-                this->velocity[idx_ijk] = 0;
+                this->Phi[idx_ijk] = 0;
             }
         }
         // extension speed
@@ -297,8 +305,8 @@ void Grid3d::Extend_velocity()
                 assert(isValidRange(i, j, argmin_k));
                 dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)];
                 if (val_z_dir < 0) val_z_dir = 0;
-                val = (this->velocity[this->Index(argmin_i, j, k)] * val_x_dir + this->velocity[this->Index(i, argmin_j, k)] * val_y_dir
-                            + this->velocity[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+                val = (this->Phi[this->Index(argmin_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmin_j, k)] * val_y_dir
+                            + this->Phi[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
 //                val = (this->velocity[this->Index(argmin_i, j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(argmin_i, j, k)])
 //                                           + this->velocity[this->Index(i, argmin_j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, argmin_j, k)])
 //                                           + this->velocity[this->Index(i, j, argmin_k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)]))
@@ -322,17 +330,17 @@ void Grid3d::Extend_velocity()
                 assert(isValidRange(i, j, argmax_k));
                 dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmax_k)];
                 if (val_z_dir > 0) val_z_dir = 0;
-                val = (this->velocity[this->Index(argmax_i, j, k)] * val_x_dir + this->velocity[this->Index(i, argmax_j, k)] * val_y_dir
-                       + this->velocity[this->Index(i, j, argmax_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+                val = (this->Phi[this->Index(argmax_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmax_j, k)] * val_y_dir
+                       + this->Phi[this->Index(i, j, argmax_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
 //                val = (this->velocity[this->Index(argmax_i, j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(argmax_i, j, k)])
 //                                           + this->velocity[this->Index(i, argmax_j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, argmax_j, k)])
 //                                           + this->velocity[this->Index(i, j, argmax_k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, j, argmax_k)]))
 //                                          / (3 * this->phi[idx_ijk] - this->phi[this->Index(argmax_i, j, k)]
 //                                             - this->phi[this->Index(i, argmax_j, k)] - this->phi[this->Index(i, j, argmax_k)]);
             }
-            this->velocity[idx_ijk] = val;
+            this->Phi[idx_ijk] = val;
         }
-        assert(!isnan(this->velocity[idx_ijk]));
+        assert(!isnan(this->Phi[idx_ijk]));
     }
 }
 
@@ -346,6 +354,10 @@ Grid3d* Grid3d::Reinitialize()
 {
     cout << "Reinitialization" << endl;
     return FMM3d(this, true);
+}
+
+dtype Grid3d::Compute_discrepancy(IdxType i, IdxType j, IdxType k) {
+    
 }
 
 Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
@@ -370,7 +382,8 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
                     // todo: change != boundary to == active
                     if (init_grid->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY) {
                         // in 3-d case, we need to exam 6 directions
-                        vector<cv::Vec3i> front_dir(6);
+                        vector<cv::Vec3i> front_dir;
+                        front_dir.reserve(6);
                         if (init_grid->isFrontHere(i, j, k, front_dir) != 0) {
                             //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
                             // narrowband status, phival, velocity
@@ -407,7 +420,7 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
     new_grid->Extend_velocity();
     if (!reinit) {
         // according to Sethian's paper, we only use new velocity instead of newly initialized phi.
-        std::swap(new_grid->velocity, init_grid->velocity);
+        std::swap(new_grid->Phi, init_grid->Phi);
         delete new_grid;
         return nullptr;
     }
@@ -506,7 +519,8 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
         new_grid->phi[idx_ijk] = 0;
         return;
     }
-    vector<int> special_grid_index(2);
+    vector<int> special_grid_index;
+    special_grid_index.reserve(2);
     auto front_type = Determine_front_type(front_dir, special_grid_index);
     dtype dist1, dist2, dist3, dist4, dist5, dist6, temp_dist1, temp_dist2, temp_dist3;
     int s_index1, s_index2, r_index1, r_index2, r_index3, r_index4;

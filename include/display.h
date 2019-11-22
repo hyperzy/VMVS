@@ -8,7 +8,7 @@
 #include "base.h"
 #include "init.h"
 
-#define USE_NEW 0
+#define USE_NEW 1
 #if USE_NEW
 void Show_3D(std::vector<Camera> &all_cams, BoundingBox &box);
 #else

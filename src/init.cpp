@@ -100,7 +100,7 @@ Point3 BoundingBox::Compute_intersection(const Camera &cam1, const Camera &cam2,
 void BoundingBox::Determine_bound_coord()
 {
     // scale the bound in case of error
-    dtype scale_factor = 1.5;
+    dtype scale_factor = 1.8;
 
     // __extents store x_min, x_max, y_min, y_max, z_min, z_max respectively;
     this->__extents.resize(6);
@@ -191,28 +191,59 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     auto nx = (DimUnit)((extent[1] - extent[0]) / box.resolution);
     auto ny = (DimUnit)((extent[3] - extent[2]) / box.resolution);
     auto nz = (DimUnit)((extent[5] - extent[4]) / box.resolution);
-//    nx = ny = nz = 33;
+//    nx = ny = nz = 36;
+    cout << "height: " << nx << ", width: " << ny << ", depth: " << nz << endl;
     vector<Point3> bound_coord = box.Get_bound_coord();
     Point3 origin = bound_coord[0];
     dtype resolution = box.resolution;
     box.grid3d = new Grid3d(nx, ny, nz);
     box.grid3d->coord.resize(nx * ny * nz);
-
 //    box.grid3d = new Grid3d(20, 20, 20);
     Grid3d *&grid = box.grid3d;
+    assert(nx > 2 * ceil(grid->boundary_distance) && ny > 2 * ceil(grid->boundary_distance) && nz > 2 * ceil(grid->boundary_distance));
     IdxType center_i = grid->_height / 2;
     IdxType center_j = grid->_width / 2;
     IdxType center_k = grid->_depth / 2;
     auto time_start = omp_get_wtime();
-#pragma omp parallel for default(none) shared(center_i, center_j, center_k, grid, radius, origin, resolution)
+#pragma omp parallel for default(none) shared(center_i, center_j, center_k, grid, radius, origin, resolution, cerr)
     for (IdxType i = 0; i < grid->_height; ++i) {
+        int h_len = (int)((grid->_height / 2 - ceil(grid->boundary_distance)) - 1);
+        int w_len = (int)((grid->_width / 2 - ceil(grid->boundary_distance)) - 1);
+        int d_len = (int)((grid->_depth / 2 - ceil(grid->boundary_distance)) - 1);
         for (IdxType j = 0; j < grid->_width; ++j) {
             bool flag_interior = false;
             IdxType start = 0, end = 0;
             for (IdxType k = 0; k < grid->_depth; ++k) {
-                grid->phi[grid->Index(i, j, k)] = sqrt(pow(i - center_i, 2)
-                                                       + pow(j - center_j, 2)
-                                                       + pow(k - center_k, 2)) - radius;
+//                grid->phi[grid->Index(i, j, k)] = sqrt(pow(i - center_i, 2)
+//                                                       + pow(j - center_j, 2)
+//                                                       + pow(k - center_k, 2)) - radius;
+                if (max(abs(((dtype)i - center_i)) / h_len, max(abs((dtype)j - center_j) / w_len, abs((dtype)k - center_k) / d_len)) == 1) {
+                    grid->phi[grid->Index(i, j, k)] = 0;
+                }
+                for (int distance = 1; distance <= grid->boundary_distance; distance++) {
+                    for (int sign = -1; sign <= 1; sign += 2) {
+                        int d = distance * sign;
+                        if (h_len + d > 0 && w_len + d > 0 && d_len + d > 0) {
+                            auto h = abs(((dtype) i - center_i) / (h_len + d));
+                            auto w = abs(((dtype) j - center_j) / (w_len + d));
+                            auto dep = abs(((dtype) k - center_k) / (d_len + d));
+                            auto l_inf_norm_val = max(h, max(w, dep));
+                            if (l_inf_norm_val == 1) {
+                                grid->phi[grid->Index(i, j, k)] = d;
+                            } else if (l_inf_norm_val == 0) {
+                                // it must be inside
+                                grid->phi[grid->Index(i, j, k)] = grid->phi[grid->Index(i - 1, j, k)] - 1;
+                            }
+                        }
+                    }
+                }
+//                else if (max(abs(((dtype)i - center_i)) / (h_len + 1), max(abs((dtype)j - center_j) / (w_len + 1), abs((dtype)k - center_k) / (d_len + 1))) == 1) {
+//                    grid->phi[grid->Index(i, j, k)] = 1;
+//                }
+//                else if (max(abs(((dtype)i - center_i)) / (h_len - 1), max(abs((dtype)j - center_j) / (w_len - 1), abs((dtype)k - center_k) / (d_len - 1))) == 1)
+//                {
+//                    grid->phi[grid->Index(i, j, k)] = -1;
+//                }
                 auto &point_coord = grid->coord[grid->Index(i, j, k)];
                 point_coord[0] = origin.x + i * resolution;
                 point_coord[1] = origin.y + j * resolution;
@@ -238,6 +269,9 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
                 if (start != end && !flag_interior) {
                     grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, end});
                 }
+                else if (k == grid->_depth - 1 && flag_interior) {
+                    grid->narrow_band[i][j].emplace_back(NarrowBandExtent{start, (IdxType)(end + 1)});
+                }
             }
         }
     }
@@ -246,7 +280,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     fstream fout("testdata.txt", ios::out);
     for (int z = 0; z < grid->_depth; z++) {
         fout << "z = " << z << endl;
-        for (int y = 0; y < grid->_height; y++)
+        for (int y = 0; y < grid->_width; y++)
         {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
         fout << endl;
         for (int x = 0; x < grid->_height; x++) {
@@ -266,14 +300,14 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     delete grid;
     box.grid3d = new_grid3d;
     //// initial visibility array
-    for (int i = 0; i < box.__all_cams.size(); i++) {
-        box.visibility_arr.emplace_back(Visibility(box.__extents, box.__all_cams[i], box.grid3d->coord, resolution,
-                                                   box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth));
-    }
-////#pragma omp parallel for default(none) shared(box)
-    for (int i = 0; i < box.visibility_arr.size(); i++) {
-        box.visibility_arr[i].Set_phi(box.grid3d->phi);
-        box.visibility_arr[i].Calculate_all();
-    }
+//    for (int i = 0; i < box.__all_cams.size(); i++) {
+//        box.visibility_arr.emplace_back(Visibility(box.__extents, box.__all_cams[i], box.grid3d->coord, resolution,
+//                                                   box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth));
+//    }
+//////#pragma omp parallel for default(none) shared(box)
+//    for (int i = 0; i < box.visibility_arr.size(); i++) {
+//        box.visibility_arr[i].Set_phi(box.grid3d->phi);
+//        box.visibility_arr[i].Calculate_all();
+//    }
 //#pragma omp barrier
 }

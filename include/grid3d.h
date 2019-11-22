@@ -80,8 +80,14 @@ public:
     Grid3d(DimUnit height, DimUnit width, DimUnit depth);
     std::vector<PointProperty> grid_prop;
     std::vector<dtype> phi;
-    // normal velocity
-    std::vector<dtype> velocity;
+//    // normal velocity of Phi* div(\nabla phi / norm(phi))
+//    std::vector<dtype> velocity;
+//    // normal velocity of innter product of \nabla Phi and \nabla phi / norm(phi)
+//    std::vector<dtype> velocity2;
+//    // store \nabla Phi to determine the upwind of norm(phi)
+//    std::vector<Vec3> d_Phi;
+    //// IMPORTANT: from the discussion with Professor, we only need to extend Phi.
+    std::vector<dtype> Phi;
     std::vector<std::vector<std::list<NarrowBandExtent>>> narrow_band;
     std::vector<IndexSet> front;
     // keep record of marching sequence to iterate it again to do extension
@@ -93,6 +99,7 @@ public:
     const DimUnit _height, _width, _depth;
     IdxType band_begin_i, band_end_i;
     std::vector<IdxType> band_begin_j, band_end_j;
+    // we assume number less than 1e-10 is zero.
     // inline function to compute location
     unsigned long Index(IdxType i, IdxType j, IdxType k) const;
     bool isValidRange(IdxType i, IdxType j, IdxType k) const;
@@ -142,6 +149,8 @@ public:
     void Update_velocity();
 
     Grid3d *Reinitialize();
+
+    dtype Compute_discrepancy(IdxType i, IdxType j, IdxType k);
 };
 
 

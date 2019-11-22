@@ -5,6 +5,9 @@
 #include "visibility.h"
 #include <iostream>
 #include <cmath>
+#include <omp.h>
+//#define NDEBUG
+#include <cassert>
 
 using namespace std;
 using namespace cv;

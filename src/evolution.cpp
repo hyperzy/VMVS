@@ -24,26 +24,27 @@ int Evolve(BoundingBox &box, vector<Camera> &all_cams)
         cout << "iteration: " << counter++ << endl;
         auto time_start = omp_get_wtime();
         //// show surface todo: design callback function to always display
-        Show_3D(all_cams, box);
-        fstream fout("testdata.txt", ios::out);
-        for (int z = 0; z < grid->_depth; z++) {
-            fout << "z = " << z << endl;
-            for (int y = 0; y < grid->_height; y++)
-            {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
-            fout << endl;
-            for (int x = 0; x < grid->_height; x++) {
-                for (int y = 0 ; y < grid->_width; y++) {
-                    fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
-                }
-                fout << endl;
-            }
-            fout << endl;
-        }
-        fout.close();
+//        Show_3D(all_cams, box);
+//        fstream fout("testdata.txt", ios::out);
+//        for (int z = 0; z < grid->_depth; z++) {
+//            fout << "z = " << z << endl;
+//            for (int y = 0; y < grid->_width; y++)
+//            {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+//            fout << endl;
+//            for (int x = 0; x < grid->_height; x++) {
+//                for (int y = 0 ; y < grid->_width; y++) {
+//                    fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+//                }
+//                fout << endl;
+//            }
+//            fout << endl;
+//        }
+//        fout.close();
         bool reinit_flag = false;
-//#pragma omp parallel for default(none) shared(new_phi, grid, reinit_flag)
+#pragma omp parallel for default(none) shared(new_phi, grid, reinit_flag)
         for (IdxType i = grid->band_begin_i; i < grid->band_end_i; i++) {
             dtype timestep = 0.1;
+            dtype float_err = 1e-12;
             for (IdxType j = grid->band_begin_j[i]; j < grid->band_end_j[i]; j++) {
                 // iterate element in a small piece narrow band
                 for (const auto &iter : grid->narrow_band[i][j]) {
@@ -52,7 +53,7 @@ int Evolve(BoundingBox &box, vector<Camera> &all_cams)
                         auto idx_ijk = grid->Index(i, j, k);
                         // if re-initialization is required, anything remained should not be changed.
                         if (!reinit_flag) {
-                            if (grid->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY && grid->velocity[idx_ijk] != 0) {
+                            if (grid->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY && grid->Phi[idx_ijk] != 0) {
                                 // central difference of norm gradient for curvature driven part
                                 dtype phi_x = (grid->phi[grid->Index(i + 1, j, k)] - grid->phi[grid->Index(i - 1, j, k)]) / 2;
                                 dtype phi_y = (grid->phi[grid->Index(i, j + 1, k)] - grid->phi[grid->Index(i, j - 1, k)]) / 2;
@@ -63,8 +64,11 @@ int Evolve(BoundingBox &box, vector<Camera> &all_cams)
 //                                    cerr << "nan_here" << endl;
 //                                    exit(1);
 //                                }
-                                temp_phi_val = grid->phi[idx_ijk] + timestep * grid->velocity[idx_ijk]
+                                temp_phi_val = grid->phi[idx_ijk] + timestep * grid->Phi[idx_ijk]
                                                                             * sqrt(pow(phi_x, 2) + pow(phi_y, 2) + pow(phi_z, 2));
+                                if (abs(temp_phi_val) <= float_err) {
+                                    temp_phi_val = 0;
+                                }
                                 // if landmine is not hit and the sign of current grid point did not change
                                 if (grid->grid_prop[idx_ijk].nb_status != NarrowBandStatus::LANDMINE || temp_phi_val * grid->phi[idx_ijk] >= 0) {
                                     new_phi[idx_ijk] = temp_phi_val;
@@ -88,23 +92,23 @@ int Evolve(BoundingBox &box, vector<Camera> &all_cams)
                 }
             }
         }
-//#pragma omp barrier
+#pragma omp barrier
         std::swap(grid->phi, new_phi);
-        fout.open("testdata.txt", ios::out);
-        for (int z = 0; z < grid->_depth; z++) {
-            fout << "z = " << z << endl;
-            for (int y = 0; y < grid->_height; y++)
-            {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
-            fout << endl;
-            for (int x = 0; x < grid->_height; x++) {
-                for (int y = 0 ; y < grid->_width; y++) {
-                    fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
-                }
-                fout << endl;
-            }
-            fout << endl;
-        }
-        fout.close();
+//        fout.open("testdata.txt", ios::out);
+//        for (int z = 0; z < grid->_depth; z++) {
+//            fout << "z = " << z << endl;
+//            for (int y = 0; y < grid->_width; y++)
+//            {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+//            fout << endl;
+//            for (int x = 0; x < grid->_height; x++) {
+//                for (int y = 0 ; y < grid->_width; y++) {
+//                    fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+//                }
+//                fout << endl;
+//            }
+//            fout << endl;
+//        }
+//        fout.close();
         if (!reinit_flag) {
             grid->Update_velocity();
         }

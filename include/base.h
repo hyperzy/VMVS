@@ -5,6 +5,7 @@
 #ifndef VMVS_BASE_H
 #define VMVS_BASE_H
 
+
 #include <opencv2/core.hpp>
 #include <vector>
 
