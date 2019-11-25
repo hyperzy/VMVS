@@ -8,6 +8,7 @@
 #include <omp.h>
 #include <iomanip>
 #include <fstream>
+#include <cassert>
 using namespace std;
 using namespace cv;
 
@@ -68,8 +69,16 @@ void BoundingBox::Init() {
 }
 
 BoundingBox::BoundingBox(const std::vector<Camera> &all_cams,
-                        dtype resolution):__all_cams(all_cams), resolution(resolution) {
+                        dtype resolution):__all_cams(all_cams), resolution(resolution)
+                        , velocity_calculator(nullptr), grid3d(nullptr)
+{
     visibility_arr.reserve(all_cams.size());
+}
+
+BoundingBox::~BoundingBox()
+{
+    delete velocity_calculator;
+    delete grid3d;
 }
 
 Point3 BoundingBox::Compute_intersection(const Camera &cam1, const Camera &cam2,
@@ -276,7 +285,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
         }
     }
 #pragma omp barrier
-    cout << omp_get_wtime() -time_start << endl;
+    cout << "Initialize surface cost: " << omp_get_wtime() -time_start << endl;
     fstream fout("testdata.txt", ios::out);
     for (int z = 0; z < grid->_depth; z++) {
         fout << "z = " << z << endl;
@@ -296,18 +305,29 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
 
     auto &coord = box.grid3d->coord;
 
-    auto new_grid3d = FMM3d(grid, true);
-    delete grid;
-    box.grid3d = new_grid3d;
+   auto new_grid3d = FMM3d(grid, true, nullptr);
+   delete grid;
+   grid = new_grid3d;
     //// initial visibility array
-//    for (int i = 0; i < box.__all_cams.size(); i++) {
-//        box.visibility_arr.emplace_back(Visibility(box.__extents, box.__all_cams[i], box.grid3d->coord, resolution,
-//                                                   box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth));
-//    }
-//////#pragma omp parallel for default(none) shared(box)
-//    for (int i = 0; i < box.visibility_arr.size(); i++) {
-//        box.visibility_arr[i].Set_phi(box.grid3d->phi);
-//        box.visibility_arr[i].Calculate_all();
-//    }
-//#pragma omp barrier
+    auto start_time = omp_get_wtime();
+    for (int i = 0; i < box.__all_cams.size(); i++) {
+        box.visibility_arr.emplace_back(Visibility(box.__extents, box.__all_cams[i], box.grid3d->coord, resolution,
+                                                   box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth));
+    }
+#pragma omp parallel for default(none) shared(box)
+    for (int i = 0; i < box.visibility_arr.size(); i++) {
+        box.visibility_arr[i].Set_phi(box.grid3d->phi);
+        box.visibility_arr[i].Calculate_all();
+    }
+    cout << "computing visibility cost: " << omp_get_wtime() - start_time << endl;
+#pragma omp barrier
+    assert(box.velocity_calculator == nullptr);
+    box.velocity_calculator = new PhiCalculator(box.__all_cams, box.grid3d->coord,
+                                                box.grid3d->_height, box.grid3d->_width, box.grid3d->_depth,
+                                                resolution);
+    box.velocity_calculator->Set_phi(grid->phi);
+    box.velocity_calculator->Set_psi(box.visibility_arr);
+    new_grid3d = FMM3d(grid, true, box.velocity_calculator);
+    delete grid;
+    grid = new_grid3d;
 }

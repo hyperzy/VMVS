@@ -70,7 +70,7 @@ void Read_data(const string &parameter_file_path, const string &gray_img_folder_
         Mat seg_img = imread(seg_img_file_paths[i], 0);
         Mat binary_img;
         threshold(seg_img, binary_img, 128, 255, THRESH_BINARY);
-        all_cams.emplace_back(Camera(R, t3, K, gray_img, binary_img));
+        all_cams.emplace_back(Camera(P, R, t3, K, gray_img, binary_img));
         ss.clear();
     }
 }

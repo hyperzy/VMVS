@@ -6,6 +6,7 @@
 #define VMVS_GRID3D_H
 
 #include "base.h"
+#include "velocity_calculator.h"
 #include <list>
 #include <queue>
 
@@ -145,12 +146,10 @@ public:
 
 
 
-    void Extend_velocity();
-    void Update_velocity();
+    void Extend_velocity(PhiCalculator *velocity_calculator);
+    void Update_velocity(PhiCalculator *velocity_calculator);
 
-    Grid3d *Reinitialize();
-
-    dtype Compute_discrepancy(IdxType i, IdxType j, IdxType k);
+    Grid3d *Reinitialize(PhiCalculator *velocity_calculator);
 };
 
 
@@ -162,9 +161,10 @@ inline unsigned long Grid3d::Index(IdxType i, IdxType j, IdxType k) const
 /**
  * @param initial_grid
  * @param reinit True for re-initialization. False for not reinitialization
+ * @param velocity_calculator The calculator for computing Discrepency Measurement Phi
  * @return
  */
-Grid3d* FMM3d(Grid3d *initial_grid, bool reinit);
+Grid3d* FMM3d(Grid3d *initial_grid, bool reinit, PhiCalculator *velocity_calculator);
 
 /**
  * The implementation of this function refers to original paper.
@@ -173,11 +173,12 @@ Grid3d* FMM3d(Grid3d *initial_grid, bool reinit);
  * @param i
  * @param j
  * @param k
- * @param sign_changed
+ * @param front_dir The directions where the front lies
  */
 void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid,
                               IdxType i, IdxType j, IdxType k,
                               std::vector<cv::Vec3i> &front_dir);
 
+dtype Determine_velocity_negative(const std::vector<dtype> &phi, IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir);
 
 #endif //VMVS_GRID3D_H

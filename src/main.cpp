@@ -32,6 +32,7 @@ int main() {
     radius = 7 / 1;
     BoundingBox box(all_cams1, 0.5);
     box.Init();
+    // radius is not in use anymore
     Init_sphere_shape(box, 7);
 
     Show_3D(all_cams1, box);

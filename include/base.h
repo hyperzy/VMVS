@@ -13,6 +13,7 @@ typedef float dtype;
 typedef cv::Point3f Point3;
 typedef cv::Vec3f Vec3;
 typedef cv::Vec2f Vec2;
+#define DTYPE CV_32F
 constexpr dtype INF = 5e10;
 typedef unsigned short IdxType;
 typedef unsigned short DimUnit;
@@ -20,14 +21,14 @@ typedef unsigned short DimUnit;
 class Camera
 {
 public:
-    const cv::Mat R, K, t, gray_img, seg_img;
+    const cv::Mat P, R, K, t, gray_img, seg_img;
     // two points of each vector;
     cv::Point leftmost;
     cv::Point rightmost;
     cv::Point topmost;
     cv::Point bottommost;
-    Camera(cv::Mat R, cv::Mat t, cv::Mat K, cv::Mat gray_img, cv::Mat seg_img):
-            R(std::move(R)), t(std::move(t)), K(std::move(K)),
+    Camera(cv::Mat P, cv::Mat R, cv::Mat t, cv::Mat K, cv::Mat gray_img, cv::Mat seg_img):
+            P(std::move(P)), R(std::move(R)), t(std::move(t)), K(std::move(K)),
             gray_img(std::move(gray_img)), seg_img(std::move(seg_img))
     {
     }

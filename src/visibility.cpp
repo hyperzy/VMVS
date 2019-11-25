@@ -14,8 +14,8 @@ using namespace cv;
 
 
 Visibility::Visibility(const std::vector<dtype> &extent, const Camera &camera, const std::vector<Vec3> &coord,
-                            dtype resolution, dtype height, dtype width, dtype depth):
-                        extent(extent), camera(camera), resolution(resolution), coord(coord),
+                            dtype resolution, DimUnit height, DimUnit width, DimUnit depth):
+                        extent(extent), camera(camera), resolution(resolution), coord(coord.data()),
                         height(height), width(width), depth(depth), cam_coord(camera.t), phi(nullptr)
 {
     // 1% error tolerant for bilinear interpolation

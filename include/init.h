@@ -11,6 +11,7 @@
 #include "base.h"
 #include "grid3d.h"
 #include "visibility.h"
+#include "velocity_calculator.h"
 
 enum Direction {
     TOP,
@@ -59,6 +60,7 @@ private:
 public:
 
     explicit BoundingBox(const std::vector<Camera> &all_cams, dtype resolution);
+    ~BoundingBox();
     Grid3d *grid3d;
     const dtype resolution;
     std::vector<Visibility> visibility_arr;
@@ -71,9 +73,10 @@ public:
     void Init();
     std::vector<dtype> Get_extents() const;
     std::vector<Point3> Get_bound_coord() const;
-
+    PhiCalculator *velocity_calculator;
 };
 
+// radius is not in use
 void Init_sphere_shape(BoundingBox &grid, dtype radius);
 
 

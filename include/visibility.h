@@ -23,7 +23,7 @@ class Visibility
 public:
     std::vector<dtype> psi;
     Visibility(const std::vector<dtype> &extent, const Camera &camera, const std::vector<Vec3> &coord,
-                dtype resolution, dtype height, dtype width, dtype depth);
+                dtype resolution, DimUnit height, DimUnit width, DimUnit depth);
     void Set_phi(const std::vector<dtype> &phi);
     unsigned long Index(IdxType i, IdxType j, IdxType k) const;
 
@@ -63,7 +63,8 @@ private:
     const std::vector<dtype> &extent;
     const Camera &camera;
     const dtype *phi;
-    const std::vector<Vec3> &coord;
+    // here we used const pointer instead onf constant reference since there is a swap clause in FMM3d
+    Vec3 const *coord;
     const DimUnit height;
     const DimUnit width;
     const DimUnit depth;

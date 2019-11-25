@@ -5,6 +5,7 @@
 #include "grid3d.h"
 #include <omp.h>
 #include <queue>
+#include <chrono>
 //#define NDEBUG
 #include <cassert>
 #include <algorithm>
@@ -224,6 +225,7 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
     }
 }
 
+/*
 void Grid3d::Extend_velocity()
 {
     for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
@@ -269,6 +271,7 @@ void Grid3d::Extend_velocity()
             }
             else {
                 this->Phi[idx_ijk] = 0;
+
             }
         }
         // extension speed
@@ -343,24 +346,64 @@ void Grid3d::Extend_velocity()
         assert(!isnan(this->Phi[idx_ijk]));
     }
 }
+*/
+void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
+{
+    cout << "start extend velocity" << endl;
+    auto start = chrono::high_resolution_clock::now();
+    if (!velocity_calculator)
+        return;
+    for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
+        auto &iter = this->marching_sequence[idx];
+        IdxType i = iter.i;
+        IdxType j = iter.j;
+        IdxType k = iter.k;
+        // todo: delete val after debug finished
+        dtype val;
+        assert(isValidRange(i, j, k));
+        auto idx_ijk = this->Index(i, j, k);
+        // first complete natural speed part
+        if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
+            && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
+            // we only compute Phi for positive front and extend the velocity to negative front
+            if (this->phi[idx_ijk] >= 0) {
+                auto start = chrono::high_resolution_clock::now();
+                this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
+                auto stop = chrono::high_resolution_clock::now();
+                auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+                cout << "velocity extension cost time: " << duration.count() << endl;
+                assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
+            }
+            // for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
+            // claimed in the paper
+//            else
+//            {
+//                // todo: still not finished.
+//                vector<cv::Vec3i> front_dir;
+//                front_dir.reserve(6);
+//                this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
+//            }
+        }
+    }
+    auto stop = chrono::high_resolution_clock::now();
+    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
+    cout << "velocity extension cost time: " << duration.count() << endl;
+    cout << "finished extension" << endl;
+}
 
-void Grid3d::Update_velocity()
+void Grid3d::Update_velocity(PhiCalculator *velocity_calculator)
 {
     cout << "Update velocity" << endl;
-    FMM3d(this, false);
+    FMM3d(this, false, velocity_calculator);
 }
 
-Grid3d* Grid3d::Reinitialize()
+Grid3d* Grid3d::Reinitialize(PhiCalculator *velocity_calculator)
 {
     cout << "Reinitialization" << endl;
-    return FMM3d(this, true);
+    return FMM3d(this, true, velocity_calculator);
 }
 
-dtype Grid3d::Compute_discrepancy(IdxType i, IdxType j, IdxType k) {
-    
-}
-
-Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
+Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator)
 {
     //// FMM
     ////// 1. FMM initial step: find front
@@ -417,7 +460,7 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
 
     ///// post precessing
     new_grid->Build_band();
-    new_grid->Extend_velocity();
+    new_grid->Extend_velocity(velocity_calculator);
     if (!reinit) {
         // according to Sethian's paper, we only use new velocity instead of newly initialized phi.
         std::swap(new_grid->Phi, init_grid->Phi);
@@ -728,3 +771,7 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
     assert (!isnan(new_grid->phi[idx_ijk]));
 }
 
+dtype Determine_velocity_negative(const std::vector<dtype> &phi, IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir)
+{
+    return 0;
+}
