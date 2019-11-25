@@ -206,7 +206,7 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
                     close_set.emplace(PointKeyVal{i, j, k, this->phi[idx_ijk]});
                     this->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
                 }
-                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
+                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
             }
         }
         assert(isValidRange(point.i, point.j, point.k));
