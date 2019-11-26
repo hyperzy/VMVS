@@ -7,21 +7,14 @@
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="2D case completed">
+    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="3d FMM completed. Evolution under curvature speed completed">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/grid3d.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/grid3d.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/display.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/grid3d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid3d.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/init.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -32,7 +25,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="Git.Settings">
     <option name="PUSH_TAGS">
       <GitPushTagMode>
@@ -47,6 +40,7 @@
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
   <component name="PropertiesComponent">
     <property name="SHARE_PROJECT_CONFIGURATION_FILES" value="true" />
+    <property name="TODO_SCOPE" value="All Places" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../FMM" />
     <property name="nodejs_package_manager_path" value="npm" />
@@ -54,8 +48,8 @@
   </component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/include" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/src" />
     </key>
   </component>
@@ -72,7 +66,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
+    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -126,7 +120,42 @@
       <workItem from="1572006049584" duration="25412000" />
       <workItem from="1572044731283" duration="15176000" />
       <workItem from="1572098790040" duration="23367000" />
-      <workItem from="1572143719439" duration="458000" />
+      <workItem from="1572143719439" duration="570000" />
+      <workItem from="1572275538000" duration="5469000" />
+      <workItem from="1572295642633" duration="5507000" />
+      <workItem from="1572304429241" duration="7907000" />
+      <workItem from="1572324505541" duration="3843000" />
+      <workItem from="1572350442850" duration="23419000" />
+      <workItem from="1572393703031" duration="5773000" />
+      <workItem from="1572450506090" duration="11465000" />
+      <workItem from="1572477574659" duration="6713000" />
+      <workItem from="1572566487187" duration="19228000" />
+      <workItem from="1572610549600" duration="2630000" />
+      <workItem from="1572622343176" duration="3352000" />
+      <workItem from="1572793088510" duration="31427000" />
+      <workItem from="1572873024668" duration="2954000" />
+      <workItem from="1572876082015" duration="115000" />
+      <workItem from="1572876213003" duration="16572000" />
+      <workItem from="1572900313627" duration="1077000" />
+      <workItem from="1572907017950" duration="5769000" />
+      <workItem from="1572916752506" duration="441000" />
+      <workItem from="1572917207060" duration="11355000" />
+      <workItem from="1572961635564" duration="4372000" />
+      <workItem from="1572971355139" duration="9257000" />
+      <workItem from="1573004244758" duration="5840000" />
+      <workItem from="1573045769712" duration="20999000" />
+      <workItem from="1573085243081" duration="6512000" />
+      <workItem from="1573135381978" duration="1911000" />
+      <workItem from="1574454111219" duration="537000" />
+      <workItem from="1574456463409" duration="5367000" />
+      <workItem from="1574471974291" duration="3631000" />
+      <workItem from="1574530851946" duration="14588000" />
+      <workItem from="1574613448212" duration="738000" />
+      <workItem from="1574614751368" duration="10447000" />
+      <workItem from="1574633536691" duration="3916000" />
+      <workItem from="1574646437525" duration="7655000" />
+      <workItem from="1574689668005" duration="19443000" />
+      <workItem from="1574732351657" duration="3153000" />
     </task>
     <task id="LOCAL-00001" summary="Second Commit">
       <created>1570199633829</created>
@@ -184,11 +213,84 @@
       <option name="project" value="LOCAL" />
       <updated>1572063246004</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="3d case framework done. Front property decision unfinished">
+      <created>1572144243854</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1572144243855</updated>
+    </task>
+    <task id="LOCAL-00010" summary="3d FMM completed. Evolution under speed unfinished.">
+      <created>1572328042471</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1572328042471</updated>
+    </task>
+    <task id="LOCAL-00011" summary="3d FMM completed. Evolution under curvature speed completed">
+      <created>1572484339828</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1572484339828</updated>
+    </task>
+    <task id="LOCAL-00012" summary="Visibility and displaying visibility finished">
+      <created>1573000807345</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1573000807345</updated>
+    </task>
+    <task id="LOCAL-00013" summary="the last version before change extend Phi">
+      <created>1574456914966</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1574456914966</updated>
+    </task>
+    <task id="LOCAL-00014" summary="Fixed a bug in an assert line">
+      <created>1574460201260</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1574460201260</updated>
+    </task>
+    <task id="LOCAL-00015" summary="discrepancy measurement finished. But it is very slow. Parallel not completed.">
+      <created>1574721776226</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1574721776226</updated>
+    </task>
+    <task id="LOCAL-00016" summary="Fixed a small but important bug in Marching function.">
+      <created>1574723090634</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1574723090634</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Fixed a small but important bug in Marching function. Changed line 207.">
+      <created>1574732646994</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1574732646994</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.History.Properties">
+    <option name="COLUMN_ORDER">
+      <list>
+        <option value="0" />
+        <option value="2" />
+        <option value="3" />
+        <option value="1" />
+      </list>
+    </option>
   </component>
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -211,47 +313,101 @@
     <MESSAGE value="Changed 2d array to 1d and updated the algorithm." />
     <MESSAGE value="3D case initialize" />
     <MESSAGE value="rendering finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="rendering finished" />
+    <MESSAGE value="3d case framework done. Front property decision unfinished" />
+    <MESSAGE value="3d FMM completed. Evolution under speed unfinished." />
+    <MESSAGE value="3d FMM completed. Evolution under curvature speed completed" />
+    <MESSAGE value="Visibility and displaying visibility finished" />
+    <MESSAGE value="the last version before change extend Phi" />
+    <MESSAGE value="Fixed a bug in an assert line" />
+    <MESSAGE value="discrepancy measurement finished. But it is very slow. Parallel not completed." />
+    <MESSAGE value="Fixed a small but important bug in Marching function." />
+    <MESSAGE value="Fixed a small but important bug in Marching function. Changed line 207." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a small but important bug in Marching function. Changed line 207." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>59</line>
-          <option name="timeStamp" value="7" />
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>847</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="i == 2 &amp;&amp; j == 7" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>54</line>
+          <option name="timeStamp" value="38" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>112</line>
-          <option name="timeStamp" value="8" />
+          <line>158</line>
+          <option name="timeStamp" value="64" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
+          <line>21</line>
+          <option name="timeStamp" value="67" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="i == 16 &amp;&amp; j == 16 &amp;&amp; k == 16" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
+          <line>52</line>
+          <option name="timeStamp" value="92" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
+          <line>111</line>
+          <option name="timeStamp" value="97" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>434</line>
+          <option name="timeStamp" value="111" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="idx_ijk == 15694" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>638</line>
+          <option name="timeStamp" value="114" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>121</line>
-          <option name="timeStamp" value="9" />
+          <line>448</line>
+          <option name="timeStamp" value="149" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
+          <line>42</line>
+          <option name="timeStamp" value="153" />
+        </line-breakpoint>
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="point.i == 16 &amp;&amp; point.j == 16" language="ObjectiveC" />
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>139</line>
+          <option name="timeStamp" value="158" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
+          <line>96</line>
+          <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>62</line>
-          <option name="timeStamp" value="10" />
+          <line>544</line>
+          <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/init.cpp</url>
-          <line>239</line>
-          <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="idx_ijk == 61946" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>247</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>176</line>
-          <option name="timeStamp" value="13" />
+          <line>483</line>
+          <option name="timeStamp" value="188" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="CMakeRunConfiguration">
+        <watch expression="grid-&gt;band_begin_j" />
+      </configuration>
+    </watches-manager>
   </component>
 </project>

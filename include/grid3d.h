@@ -91,8 +91,10 @@ public:
     std::vector<dtype> Phi;
     std::vector<std::vector<std::list<NarrowBandExtent>>> narrow_band;
     std::vector<IndexSet> front;
-    // keep record of marching sequence to iterate it again to do extension
-    std::vector<IndexSet> marching_sequence;
+//    // keep record of marching sequence to iterate it again to do extension
+//    std::vector<IndexSet> marching_sequence;
+    //
+    std::vector<IndexSet> pos_front_sequence, neg_front_sequence, pos_marching_sequence, neg_marching_sequence;
     std::vector<Vec3> coord;
     dtype active_distance;
     dtype landmine_distance;
@@ -142,7 +144,10 @@ public:
      * @param close_set
      * @param inside True for negative value (inside the surface). False otherwise.
      */
-    void Marching(std::priority_queue<PointKeyVal> &close_set, bool inside);
+    void Marching_pos(std::priority_queue<PointKeyVal> &close_set);
+
+    void Marching_neg(std::priority_queue<PointKeyVal> &close_set);
+
 
 
 

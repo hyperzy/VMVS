@@ -130,14 +130,13 @@ bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i>
     return is_front_here;
 }
 
-void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
+void Grid3d::Marching_pos(std::priority_queue<PointKeyVal> &close_set)
 {
     dtype speed = 1.0;
     dtype reciprocal = 1.0 / speed;
     int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
                        {0, -1, 0}, {0, 1, 0},
                        {0, 0, -1}, {0, 0, 1}};
-    vector<IndexSet> band_point_index;
     while (!close_set.empty()) {
         PointKeyVal point = close_set.top();
         assert(isValidRange(point.i, point.j, point.k));
@@ -205,23 +204,115 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
                 if (this->grid_prop[idx_ijk].fmm_status != FMM_Status::CLOSE) {
                     close_set.emplace(PointKeyVal{i, j, k, this->phi[idx_ijk]});
                     this->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                    this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
                 }
-                this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
             }
         }
         assert(isValidRange(point.i, point.j, point.k));
         this->grid_prop[this->Index(point.i, point.j, point.k)].fmm_status = FMM_Status::ACCEPT;
-        this->marching_sequence.emplace_back(IndexSet{point.i, point.j, point.k});
+        // todo:conside put it into 6 lines above
+        if (this->grid_prop[this->Index(point.i, point.j, point.k)].extension_status == ExtensionStatus::EXTENSION)
+            this->pos_marching_sequence.emplace_back(IndexSet{point.i, point.j, point.k});
         this->Build_coarse_band(point.i, point.j, point.k);
         // add current point into neg narrow band (inside)
-        if (inside) { band_point_index.emplace_back(IndexSet{point.i, point.j, point.k}); }
         close_set.pop();
     }
-    if (inside) {
-        for (const auto &iter : band_point_index) {
-            assert(isValidRange(iter.i, iter.j, iter.k));
-            this->phi[this->Index(iter.i, iter.j, iter.k)] *= -1;
+}
+
+void Grid3d::Marching_neg(std::priority_queue<PointKeyVal> &close_set)
+{
+    dtype speed = 1.0;
+    dtype reciprocal = 1.0 / speed;
+    int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
+                       {0, -1, 0}, {0, 1, 0},
+                       {0, 0, -1}, {0, 0, 1}};
+    while (!close_set.empty()) {
+        PointKeyVal point = close_set.top();
+        assert(isValidRange(point.i, point.j, point.k));
+        if (point.phi_val <= active_distance) {
+            this->grid_prop[this->Index(point.i, point.j, point.k)].nb_status = NarrowBandStatus::ACTIVE;
         }
+        else if (point.phi_val <= landmine_distance) {
+            this->grid_prop[this->Index(point.i, point.j, point.k)].nb_status = NarrowBandStatus::LANDMINE;
+        }
+        else if (point.phi_val <= boundary_distance) {
+            this->grid_prop[this->Index(point.i, point.j, point.k)].nb_status = NarrowBandStatus::BOUNDARY;
+        }
+        else {
+            // it means all the points remained are outside narrow band. So the loop can break.
+            this->grid_prop[this->Index(point.i, point.j, point.k)].nb_status = NarrowBandStatus::OUTSIDE;
+            break;
+        }
+
+        // add new 'CLOSE' point from 'FAR' point and computing the value
+        for (const auto &idx_iter : index) {
+            IdxType i = point.i + idx_iter[0];
+            IdxType j = point.j + idx_iter[1];
+            IdxType k = point.k + idx_iter[2];
+            auto idx_ijk = this->Index(i, j, k);
+            // check necessity of the grid to be computed
+            if (this->isValidRange(i, j, k) && this->grid_prop[idx_ijk].fmm_status != FMM_Status::ACCEPT
+                && this->grid_prop[idx_ijk].fmm_status != FMM_Status::OTHER_SIDE) {
+                // smaller value in x, y, z direction respectively
+                vector<dtype> smaller_val(3, 0);
+                smaller_val[0] = min(this->isValidRange(i - 1, j, k) ? this->phi[this->Index(i - 1, j, k)] : INF,
+                                     this->isValidRange(i + 1, j, k) ? this->phi[this->Index(i + 1, j, k)] : INF);
+                smaller_val[1] = min(this->isValidRange(i, j - 1, k) ? this->phi[this->Index(i, j - 1, k)] : INF,
+                                     this->isValidRange(i, j + 1, k) ? this->phi[this->Index(i, j + 1, k)] : INF);
+                smaller_val[2] = min(this->isValidRange(i, j, k - 1) ? this->phi[this->Index(i, j, k - 1)] : INF,
+                                     this->isValidRange(i, j, k + 1) ? this->phi[this->Index(i, j, k + 1)] : INF);
+                // ascending order
+                // so 'c' is the largest
+                std::sort(smaller_val.begin(), smaller_val.end());
+                auto a = smaller_val[0];
+                auto b = smaller_val[1];
+                auto c = smaller_val[2];
+                dtype temp;
+                // case 1
+                // todo: (16, 16, 8) k = -1  a = 1 b = inf c = inf 理论上来说应该是会归入此类
+                if (pow(c - a, 2) + pow(c - b, 2) < pow(reciprocal, 2)) {
+                    temp = (a + b + c + sqrt(3 * pow(reciprocal, 2) - pow(c - b, 2) - pow(c - a, 2)
+                                             - pow(b - a, 2))) / 3;
+                }
+                else if (pow(c - a, 2) + pow(c - b, 2) >= pow(reciprocal, 2)
+                         && abs(b - a) < reciprocal) {
+                    temp = (a + b + sqrt(2 * pow(reciprocal, 2) - pow(a - b, 2))) / 2;
+
+                }
+                else {
+                    temp = a + reciprocal;
+                }
+                // store the minimum value
+                this->phi[idx_ijk] = min(this->phi[idx_ijk], temp);
+//                if (isnan(this->phi[idx_ijk])) {
+//                    cerr << "nan" << endl;
+//                    exit(1);
+//                }
+                // FMM guarantee that the newly inserted value is larger than heap top element.
+                // this condition is in case of duplication
+                if (this->grid_prop[idx_ijk].fmm_status != FMM_Status::CLOSE) {
+                    close_set.emplace(PointKeyVal{i, j, k, this->phi[idx_ijk]});
+                    this->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                    this->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
+                }
+            }
+        }
+        assert(isValidRange(point.i, point.j, point.k));
+        this->grid_prop[this->Index(point.i, point.j, point.k)].fmm_status = FMM_Status::ACCEPT;
+        // todo:conside put it into 6 lines above
+        if (this->grid_prop[this->Index(point.i, point.j, point.k)].extension_status == ExtensionStatus::EXTENSION)
+            this->pos_marching_sequence.emplace_back(IndexSet{point.i, point.j, point.k});
+        this->Build_coarse_band(point.i, point.j, point.k);
+        // add current point into neg narrow band (inside)
+        close_set.pop();
+    }
+    for (const auto &iter : neg_front_sequence) {
+        assert(isValidRange(iter.i, iter.j, iter.k));
+        this->phi[this->Index(iter.i, iter.j, iter.k)] *= -1;
+    }
+    for (const auto &iter : neg_marching_sequence) {
+        assert(isValidRange(iter.i, iter.j, iter.k));
+        this->phi[this->Index(iter.i, iter.j, iter.k)] *= -1;
     }
 }
 
@@ -349,46 +440,46 @@ void Grid3d::Extend_velocity()
 */
 void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
 {
-    cout << "start extend velocity" << endl;
-    auto start = chrono::high_resolution_clock::now();
-    if (!velocity_calculator)
-        return;
-    for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
-        auto &iter = this->marching_sequence[idx];
-        IdxType i = iter.i;
-        IdxType j = iter.j;
-        IdxType k = iter.k;
-        // todo: delete val after debug finished
-        dtype val;
-        assert(isValidRange(i, j, k));
-        auto idx_ijk = this->Index(i, j, k);
-        // first complete natural speed part
-        if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
-            && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
-            // we only compute Phi for positive front and extend the velocity to negative front
-            if (this->phi[idx_ijk] >= 0) {
-                auto start = chrono::high_resolution_clock::now();
-                this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
-                auto stop = chrono::high_resolution_clock::now();
-                auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-                cout << "velocity extension cost time: " << duration.count() << endl;
-                assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
-            }
-            // for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
-            // claimed in the paper
-//            else
-//            {
-//                // todo: still not finished.
-//                vector<cv::Vec3i> front_dir;
-//                front_dir.reserve(6);
-//                this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
+//    cout << "start extend velocity" << endl;
+//    auto start = chrono::high_resolution_clock::now();
+//    if (!velocity_calculator)
+//        return;
+//    for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
+//        auto &iter = this->marching_sequence[idx];
+//        IdxType i = iter.i;
+//        IdxType j = iter.j;
+//        IdxType k = iter.k;
+//        // todo: delete val after debug finished
+//        dtype val;
+//        assert(isValidRange(i, j, k));
+//        auto idx_ijk = this->Index(i, j, k);
+//        // first complete natural speed part
+//        if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
+//            && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
+//            // we only compute Phi for positive front and extend the velocity to negative front
+//            if (this->phi[idx_ijk] >= 0) {
+//                auto start = chrono::high_resolution_clock::now();
+//                this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
+//                auto stop = chrono::high_resolution_clock::now();
+//                auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+//                cout << "velocity extension cost time: " << duration.count() << endl;
+//                assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
 //            }
-        }
-    }
-    auto stop = chrono::high_resolution_clock::now();
-    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
-    cout << "velocity extension cost time: " << duration.count() << endl;
-    cout << "finished extension" << endl;
+//            // for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
+//            // claimed in the paper
+////            else
+////            {
+////                // todo: still not finished.
+////                vector<cv::Vec3i> front_dir;
+////                front_dir.reserve(6);
+////                this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
+////            }
+//        }
+//    }
+//    auto stop = chrono::high_resolution_clock::now();
+//    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
+//    cout << "velocity extension cost time: " << duration.count() << endl;
+//    cout << "finished extension" << endl;
 }
 
 void Grid3d::Update_velocity(PhiCalculator *velocity_calculator)
@@ -436,13 +527,15 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
                             if (init_grid->phi[idx_ijk] > 0) {
                                 close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
                                 new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
                             }
                             else if (init_grid->phi[idx_ijk] < 0) {
                                 close_pq_neg.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
                                 new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                new_grid->neg_front_sequence.emplace_back(IndexSet{i, j, k});
                             }
                             else {
-                                new_grid->marching_sequence.emplace_back(IndexSet{i, j, k});
+                                new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
 //                                new_grid->front.emplace_back(IndexSet{i, j, k});
                             }
 //                            new_grid->front.emplace_back(IndexSet{i, j, k});
@@ -455,8 +548,8 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
     }
 
     ////// 2. Marching
-    new_grid->Marching(close_pq_pos, false);
-    new_grid->Marching(close_pq_neg, true);
+    new_grid->Marching_pos(close_pq_pos);
+    new_grid->Marching_neg(close_pq_neg);
 
     ///// post precessing
     new_grid->Build_band();
