@@ -312,33 +312,6 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
-src/velocity_calculator.o: src/velocity_calculator.cpp.o
-
-.PHONY : src/velocity_calculator.o
-
-# target to build an object file
-src/velocity_calculator.cpp.o:
-	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o
-.PHONY : src/velocity_calculator.cpp.o
-
-src/velocity_calculator.i: src/velocity_calculator.cpp.i
-
-.PHONY : src/velocity_calculator.i
-
-# target to preprocess a source file
-src/velocity_calculator.cpp.i:
-	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.i
-.PHONY : src/velocity_calculator.cpp.i
-
-src/velocity_calculator.s: src/velocity_calculator.cpp.s
-
-.PHONY : src/velocity_calculator.s
-
-# target to generate assembly for a file
-src/velocity_calculator.cpp.s:
-	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.s
-.PHONY : src/velocity_calculator.cpp.s
-
 src/visibility.o: src/visibility.cpp.o
 
 .PHONY : src/visibility.o
@@ -396,9 +369,6 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
-	@echo "... src/velocity_calculator.o"
-	@echo "... src/velocity_calculator.i"
-	@echo "... src/velocity_calculator.s"
 	@echo "... src/visibility.o"
 	@echo "... src/visibility.i"
 	@echo "... src/visibility.s"

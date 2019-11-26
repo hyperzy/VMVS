@@ -6,7 +6,6 @@ file(REMOVE_RECURSE
   "CMakeFiles/VMVS.dir/src/grid3d.cpp.o"
   "CMakeFiles/VMVS.dir/src/init.cpp.o"
   "CMakeFiles/VMVS.dir/src/main.cpp.o"
-  "CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o"
   "CMakeFiles/VMVS.dir/src/visibility.cpp.o"
   "VMVS.pdb"
   "VMVS"

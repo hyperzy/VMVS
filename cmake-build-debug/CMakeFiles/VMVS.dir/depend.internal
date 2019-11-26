@@ -10,7 +10,6 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  ../include/evolution.h
  ../include/grid3d.h
  ../include/init.h
- ../include/velocity_calculator.h
  ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/display.cpp
  /usr/local/include/vtk-8.2/vtkABI.h
@@ -134,7 +133,6 @@ CMakeFiles/VMVS.dir/src/evolution.cpp.o
  ../include/evolution.h
  ../include/grid3d.h
  ../include/init.h
- ../include/velocity_calculator.h
  ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/evolution.cpp
 CMakeFiles/VMVS.dir/src/filesio.cpp.o
@@ -144,14 +142,11 @@ CMakeFiles/VMVS.dir/src/filesio.cpp.o
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o
  ../include/base.h
  ../include/grid3d.h
- ../include/velocity_calculator.h
- ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/grid3d.cpp
 CMakeFiles/VMVS.dir/src/init.cpp.o
  ../include/base.h
  ../include/grid3d.h
  ../include/init.h
- ../include/velocity_calculator.h
  ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/init.cpp
 CMakeFiles/VMVS.dir/src/main.cpp.o
@@ -161,7 +156,6 @@ CMakeFiles/VMVS.dir/src/main.cpp.o
  ../include/filesio.h
  ../include/grid3d.h
  ../include/init.h
- ../include/velocity_calculator.h
  ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/main.cpp
  /home/himalaya/Documents/VMVS/testvtk.cpp
@@ -199,11 +193,6 @@ CMakeFiles/VMVS.dir/src/main.cpp.o
  /usr/local/include/vtk-8.2/vtk_kwiml.h
  /usr/local/include/vtk-8.2/vtkkwiml/abi.h
  /usr/local/include/vtk-8.2/vtkkwiml/int.h
-CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o
- ../include/base.h
- ../include/velocity_calculator.h
- ../include/visibility.h
- /home/himalaya/Documents/VMVS/src/velocity_calculator.cpp
 CMakeFiles/VMVS.dir/src/visibility.cpp.o
  ../include/base.h
  ../include/visibility.h

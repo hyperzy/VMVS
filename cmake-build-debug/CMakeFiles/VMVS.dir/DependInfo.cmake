@@ -11,7 +11,6 @@ set(CMAKE_DEPENDS_CHECK_CXX
   "/home/himalaya/Documents/VMVS/src/grid3d.cpp" "/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir/src/grid3d.cpp.o"
   "/home/himalaya/Documents/VMVS/src/init.cpp" "/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir/src/init.cpp.o"
   "/home/himalaya/Documents/VMVS/src/main.cpp" "/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o"
-  "/home/himalaya/Documents/VMVS/src/velocity_calculator.cpp" "/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o"
   "/home/himalaya/Documents/VMVS/src/visibility.cpp" "/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles/VMVS.dir/src/visibility.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "GNU")

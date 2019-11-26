@@ -9,7 +9,6 @@ CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/display.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/evolution.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/grid3d.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/init.h
-CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/velocity_calculator.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: ../include/visibility.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: ../src/display.cpp
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkABI.h
@@ -133,7 +132,6 @@ CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/display.h
 CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/evolution.h
 CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/grid3d.h
 CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/init.h
-CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/velocity_calculator.h
 CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../include/visibility.h
 CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../src/evolution.cpp
 
@@ -143,14 +141,11 @@ CMakeFiles/VMVS.dir/src/filesio.cpp.o: ../src/filesio.cpp
 
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../include/base.h
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../include/grid3d.h
-CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../include/velocity_calculator.h
-CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../include/visibility.h
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../src/grid3d.cpp
 
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../include/base.h
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../include/grid3d.h
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../include/init.h
-CMakeFiles/VMVS.dir/src/init.cpp.o: ../include/velocity_calculator.h
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../include/visibility.h
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../src/init.cpp
 
@@ -160,7 +155,6 @@ CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/evolution.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/filesio.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/grid3d.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/init.h
-CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/velocity_calculator.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../include/visibility.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../src/main.cpp
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../testvtk.cpp
@@ -198,11 +192,6 @@ CMakeFiles/VMVS.dir/src/main.cpp.o: /usr/local/include/vtk-8.2/vtkWrappingHints.
 CMakeFiles/VMVS.dir/src/main.cpp.o: /usr/local/include/vtk-8.2/vtk_kwiml.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: /usr/local/include/vtk-8.2/vtkkwiml/abi.h
 CMakeFiles/VMVS.dir/src/main.cpp.o: /usr/local/include/vtk-8.2/vtkkwiml/int.h
-
-CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: ../include/base.h
-CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: ../include/velocity_calculator.h
-CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: ../include/visibility.h
-CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: ../src/velocity_calculator.cpp
 
 CMakeFiles/VMVS.dir/src/visibility.cpp.o: ../include/base.h
 CMakeFiles/VMVS.dir/src/visibility.cpp.o: ../include/visibility.h
