@@ -7,8 +7,11 @@ CMakeFiles/VMVS.dir/src/base.cpp.o
 CMakeFiles/VMVS.dir/src/display.cpp.o
  ../include/base.h
  ../include/display.h
+ ../include/evolution.h
  ../include/grid3d.h
  ../include/init.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/display.cpp
  /usr/local/include/vtk-8.2/vtkABI.h
  /usr/local/include/vtk-8.2/vtkAOSDataArrayTemplate.h
@@ -27,6 +30,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkAutoInit.h
  /usr/local/include/vtk-8.2/vtkAxesActor.h
  /usr/local/include/vtk-8.2/vtkBuffer.h
+ /usr/local/include/vtk-8.2/vtkCallbackCommand.h
  /usr/local/include/vtk-8.2/vtkCaptionActor2D.h
  /usr/local/include/vtk-8.2/vtkCell.h
  /usr/local/include/vtk-8.2/vtkCellArray.h
@@ -40,27 +44,38 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkCommonCoreModule.h
  /usr/local/include/vtk-8.2/vtkCommonDataModelModule.h
  /usr/local/include/vtk-8.2/vtkCommonExecutionModelModule.h
+ /usr/local/include/vtk-8.2/vtkCommonMiscModule.h
  /usr/local/include/vtk-8.2/vtkConfigure.h
+ /usr/local/include/vtk-8.2/vtkContourValues.h
  /usr/local/include/vtk-8.2/vtkCoordinate.h
  /usr/local/include/vtk-8.2/vtkCubeSource.h
  /usr/local/include/vtk-8.2/vtkCylinderSource.h
  /usr/local/include/vtk-8.2/vtkDataArray.h
  /usr/local/include/vtk-8.2/vtkDataObject.h
  /usr/local/include/vtk-8.2/vtkDataSet.h
+ /usr/local/include/vtk-8.2/vtkDataSetAttributes.h
+ /usr/local/include/vtk-8.2/vtkDataSetAttributesFieldList.h
  /usr/local/include/vtk-8.2/vtkDebugLeaksManager.h
+ /usr/local/include/vtk-8.2/vtkFieldData.h
  /usr/local/include/vtk-8.2/vtkFiltersCoreModule.h
  /usr/local/include/vtk-8.2/vtkFiltersSourcesModule.h
+ /usr/local/include/vtk-8.2/vtkFloatArray.h
  /usr/local/include/vtk-8.2/vtkGenericDataArray.h
  /usr/local/include/vtk-8.2/vtkGenericDataArray.txx
  /usr/local/include/vtk-8.2/vtkGenericDataArrayLookupHelper.h
+ /usr/local/include/vtk-8.2/vtkIOImageModule.h
  /usr/local/include/vtk-8.2/vtkIOStream.h
  /usr/local/include/vtk-8.2/vtkIOStreamFwd.h
  /usr/local/include/vtk-8.2/vtkIdList.h
  /usr/local/include/vtk-8.2/vtkIdTypeArray.h
+ /usr/local/include/vtk-8.2/vtkImageAlgorithm.h
+ /usr/local/include/vtk-8.2/vtkImageData.h
+ /usr/local/include/vtk-8.2/vtkImageImport.h
  /usr/local/include/vtk-8.2/vtkIndent.h
  /usr/local/include/vtk-8.2/vtkIntArray.h
  /usr/local/include/vtk-8.2/vtkLineSource.h
  /usr/local/include/vtk-8.2/vtkMapper.h
+ /usr/local/include/vtk-8.2/vtkMarchingCubes.h
  /usr/local/include/vtk-8.2/vtkMath.h
  /usr/local/include/vtk-8.2/vtkMathConfigure.h
  /usr/local/include/vtk-8.2/vtkNamedColors.h
@@ -70,6 +85,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkObject.h
  /usr/local/include/vtk-8.2/vtkObjectBase.h
  /usr/local/include/vtk-8.2/vtkObjectFactory.h
+ /usr/local/include/vtk-8.2/vtkPointData.h
  /usr/local/include/vtk-8.2/vtkPointSet.h
  /usr/local/include/vtk-8.2/vtkPoints.h
  /usr/local/include/vtk-8.2/vtkPolyData.h
@@ -89,6 +105,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkSmartPointerBase.h
  /usr/local/include/vtk-8.2/vtkStdString.h
  /usr/local/include/vtk-8.2/vtkStringArray.h
+ /usr/local/include/vtk-8.2/vtkStructuredData.h
  /usr/local/include/vtk-8.2/vtkSystemIncludes.h
  /usr/local/include/vtk-8.2/vtkTextProperty.h
  /usr/local/include/vtk-8.2/vtkTimeStamp.h
@@ -111,6 +128,15 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtk_kwiml.h
  /usr/local/include/vtk-8.2/vtkkwiml/abi.h
  /usr/local/include/vtk-8.2/vtkkwiml/int.h
+CMakeFiles/VMVS.dir/src/evolution.cpp.o
+ ../include/base.h
+ ../include/display.h
+ ../include/evolution.h
+ ../include/grid3d.h
+ ../include/init.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
+ /home/himalaya/Documents/VMVS/src/evolution.cpp
 CMakeFiles/VMVS.dir/src/filesio.cpp.o
  ../include/base.h
  ../include/filesio.h
@@ -118,16 +144,67 @@ CMakeFiles/VMVS.dir/src/filesio.cpp.o
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o
  ../include/base.h
  ../include/grid3d.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/grid3d.cpp
 CMakeFiles/VMVS.dir/src/init.cpp.o
  ../include/base.h
  ../include/grid3d.h
  ../include/init.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/init.cpp
 CMakeFiles/VMVS.dir/src/main.cpp.o
  ../include/base.h
  ../include/display.h
+ ../include/evolution.h
  ../include/filesio.h
  ../include/grid3d.h
  ../include/init.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
  /home/himalaya/Documents/VMVS/src/main.cpp
+ /home/himalaya/Documents/VMVS/testvtk.cpp
+ /usr/local/include/vtk-8.2/vtkABI.h
+ /usr/local/include/vtk-8.2/vtkAtomic.h
+ /usr/local/include/vtk-8.2/vtkAtomicTypeConcepts.h
+ /usr/local/include/vtk-8.2/vtkAtomicTypes.h
+ /usr/local/include/vtk-8.2/vtkAutoInit.h
+ /usr/local/include/vtk-8.2/vtkCommonCoreModule.h
+ /usr/local/include/vtk-8.2/vtkCommonDataModelModule.h
+ /usr/local/include/vtk-8.2/vtkConfigure.h
+ /usr/local/include/vtk-8.2/vtkDataObject.h
+ /usr/local/include/vtk-8.2/vtkDataSet.h
+ /usr/local/include/vtk-8.2/vtkDebugLeaksManager.h
+ /usr/local/include/vtk-8.2/vtkIOStream.h
+ /usr/local/include/vtk-8.2/vtkIOStreamFwd.h
+ /usr/local/include/vtk-8.2/vtkImageData.h
+ /usr/local/include/vtk-8.2/vtkIndent.h
+ /usr/local/include/vtk-8.2/vtkNew.h
+ /usr/local/include/vtk-8.2/vtkOStrStreamWrapper.h
+ /usr/local/include/vtk-8.2/vtkOStreamWrapper.h
+ /usr/local/include/vtk-8.2/vtkObject.h
+ /usr/local/include/vtk-8.2/vtkObjectBase.h
+ /usr/local/include/vtk-8.2/vtkSetGet.h
+ /usr/local/include/vtk-8.2/vtkSmartPointer.h
+ /usr/local/include/vtk-8.2/vtkSmartPointerBase.h
+ /usr/local/include/vtk-8.2/vtkStructuredData.h
+ /usr/local/include/vtk-8.2/vtkSystemIncludes.h
+ /usr/local/include/vtk-8.2/vtkTimeStamp.h
+ /usr/local/include/vtk-8.2/vtkType.h
+ /usr/local/include/vtk-8.2/vtkVersionMacros.h
+ /usr/local/include/vtk-8.2/vtkWeakPointerBase.h
+ /usr/local/include/vtk-8.2/vtkWin32Header.h
+ /usr/local/include/vtk-8.2/vtkWrappingHints.h
+ /usr/local/include/vtk-8.2/vtk_kwiml.h
+ /usr/local/include/vtk-8.2/vtkkwiml/abi.h
+ /usr/local/include/vtk-8.2/vtkkwiml/int.h
+CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o
+ ../include/base.h
+ ../include/velocity_calculator.h
+ ../include/visibility.h
+ /home/himalaya/Documents/VMVS/src/velocity_calculator.cpp
+CMakeFiles/VMVS.dir/src/visibility.cpp.o
+ ../include/base.h
+ ../include/visibility.h
+ /home/himalaya/Documents/VMVS/src/visibility.cpp

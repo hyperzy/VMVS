@@ -102,6 +102,9 @@
 		<Unit filename="/home/himalaya/Documents/VMVS/src/display.cpp">
 			<Option target="VMVS"/>
 		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/evolution.cpp">
+			<Option target="VMVS"/>
+		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/src/filesio.cpp">
 			<Option target="VMVS"/>
 		</Unit>
@@ -112,6 +115,12 @@
 			<Option target="VMVS"/>
 		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/src/main.cpp">
+			<Option target="VMVS"/>
+		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/velocity_calculator.cpp">
+			<Option target="VMVS"/>
+		</Unit>
+		<Unit filename="/home/himalaya/Documents/VMVS/src/visibility.cpp">
 			<Option target="VMVS"/>
 		</Unit>
 		<Unit filename="/home/himalaya/Documents/VMVS/CMakeLists.txt">

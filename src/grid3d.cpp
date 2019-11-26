@@ -301,7 +301,7 @@ void Grid3d::Marching_neg(std::priority_queue<PointKeyVal> &close_set)
         this->grid_prop[this->Index(point.i, point.j, point.k)].fmm_status = FMM_Status::ACCEPT;
         // todo:conside put it into 6 lines above
         if (this->grid_prop[this->Index(point.i, point.j, point.k)].extension_status == ExtensionStatus::EXTENSION)
-            this->pos_marching_sequence.emplace_back(IndexSet{point.i, point.j, point.k});
+            this->neg_marching_sequence.emplace_back(IndexSet{point.i, point.j, point.k});
         this->Build_coarse_band(point.i, point.j, point.k);
         // add current point into neg narrow band (inside)
         close_set.pop();
@@ -438,48 +438,45 @@ void Grid3d::Extend_velocity()
     }
 }
 */
+
 void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
 {
-//    cout << "start extend velocity" << endl;
-//    auto start = chrono::high_resolution_clock::now();
-//    if (!velocity_calculator)
-//        return;
-//    for (unsigned long idx = 0; idx < this->marching_sequence.size(); idx++) {
-//        auto &iter = this->marching_sequence[idx];
-//        IdxType i = iter.i;
-//        IdxType j = iter.j;
-//        IdxType k = iter.k;
-//        // todo: delete val after debug finished
-//        dtype val;
-//        assert(isValidRange(i, j, k));
-//        auto idx_ijk = this->Index(i, j, k);
-//        // first complete natural speed part
-//        if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
-//            && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
-//            // we only compute Phi for positive front and extend the velocity to negative front
-//            if (this->phi[idx_ijk] >= 0) {
-//                auto start = chrono::high_resolution_clock::now();
-//                this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
-//                auto stop = chrono::high_resolution_clock::now();
-//                auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-//                cout << "velocity extension cost time: " << duration.count() << endl;
-//                assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
-//            }
-//            // for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
-//            // claimed in the paper
-////            else
-////            {
-////                // todo: still not finished.
-////                vector<cv::Vec3i> front_dir;
-////                front_dir.reserve(6);
-////                this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
-////            }
-//        }
-//    }
-//    auto stop = chrono::high_resolution_clock::now();
-//    auto duration = chrono::duration_cast<chrono::seconds>(stop - start);
-//    cout << "velocity extension cost time: " << duration.count() << endl;
-//    cout << "finished extension" << endl;
+    cout << "start extend velocity" << endl;
+    //    auto start = chrono::high_resolution_clock::now();
+    auto start = omp_get_wtime();
+    if (!velocity_calculator)
+        return;
+#pragma omp parallel for default(none) shared(velocity_calculator)
+    for (unsigned long idx = 0; idx < this->pos_front_sequence.size(); idx++) {
+        auto &point = this->pos_front_sequence[idx];
+        IdxType i = point.i;
+        IdxType j = point.j;
+        IdxType k = point.k;
+    //        assert(isValidRange(i, j, k));
+        auto idx_ijk = this->Index(i, j, k);
+    //        assert(this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
+    //               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL);
+    //        auto start = chrono::high_resolution_clock::now();
+        this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
+    //        auto stop = chrono::high_resolution_clock::now();
+    //        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+    //        cout << "velocity extension cost time: " << duration.count() << endl;
+    //        assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
+    }
+#pragma omp barrier
+
+    // todo :negative part
+    //  for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
+    //  claimed in the paper
+    //    vector<cv::Vec3i> front_dir;
+    //    front_dir.reserve(6);
+    //    this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
+    // this->Phi[neg]
+    // todo: neg extension part
+    // todo: pos extension part
+
+    cout << "velocity extension costs time: " << omp_get_wtime() - start << endl;
+    cout << "finished extension" << endl;
 }
 
 void Grid3d::Update_velocity(PhiCalculator *velocity_calculator)

@@ -83,9 +83,22 @@ CMakeFiles/VMVS.dir/src/display.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/VMVS.dir/src/display.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/himalaya/Documents/VMVS/src/display.cpp -o CMakeFiles/VMVS.dir/src/display.cpp.s
 
+CMakeFiles/VMVS.dir/src/evolution.cpp.o: CMakeFiles/VMVS.dir/flags.make
+CMakeFiles/VMVS.dir/src/evolution.cpp.o: ../src/evolution.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/VMVS.dir/src/evolution.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/evolution.cpp.o -c /home/himalaya/Documents/VMVS/src/evolution.cpp
+
+CMakeFiles/VMVS.dir/src/evolution.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/VMVS.dir/src/evolution.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/himalaya/Documents/VMVS/src/evolution.cpp > CMakeFiles/VMVS.dir/src/evolution.cpp.i
+
+CMakeFiles/VMVS.dir/src/evolution.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/VMVS.dir/src/evolution.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/himalaya/Documents/VMVS/src/evolution.cpp -o CMakeFiles/VMVS.dir/src/evolution.cpp.s
+
 CMakeFiles/VMVS.dir/src/filesio.cpp.o: CMakeFiles/VMVS.dir/flags.make
 CMakeFiles/VMVS.dir/src/filesio.cpp.o: ../src/filesio.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/VMVS.dir/src/filesio.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/VMVS.dir/src/filesio.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/filesio.cpp.o -c /home/himalaya/Documents/VMVS/src/filesio.cpp
 
 CMakeFiles/VMVS.dir/src/filesio.cpp.i: cmake_force
@@ -98,7 +111,7 @@ CMakeFiles/VMVS.dir/src/filesio.cpp.s: cmake_force
 
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o: CMakeFiles/VMVS.dir/flags.make
 CMakeFiles/VMVS.dir/src/grid3d.cpp.o: ../src/grid3d.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/VMVS.dir/src/grid3d.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/VMVS.dir/src/grid3d.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/grid3d.cpp.o -c /home/himalaya/Documents/VMVS/src/grid3d.cpp
 
 CMakeFiles/VMVS.dir/src/grid3d.cpp.i: cmake_force
@@ -111,7 +124,7 @@ CMakeFiles/VMVS.dir/src/grid3d.cpp.s: cmake_force
 
 CMakeFiles/VMVS.dir/src/init.cpp.o: CMakeFiles/VMVS.dir/flags.make
 CMakeFiles/VMVS.dir/src/init.cpp.o: ../src/init.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/VMVS.dir/src/init.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/VMVS.dir/src/init.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/init.cpp.o -c /home/himalaya/Documents/VMVS/src/init.cpp
 
 CMakeFiles/VMVS.dir/src/init.cpp.i: cmake_force
@@ -124,7 +137,7 @@ CMakeFiles/VMVS.dir/src/init.cpp.s: cmake_force
 
 CMakeFiles/VMVS.dir/src/main.cpp.o: CMakeFiles/VMVS.dir/flags.make
 CMakeFiles/VMVS.dir/src/main.cpp.o: ../src/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/VMVS.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Building CXX object CMakeFiles/VMVS.dir/src/main.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/main.cpp.o -c /home/himalaya/Documents/VMVS/src/main.cpp
 
 CMakeFiles/VMVS.dir/src/main.cpp.i: cmake_force
@@ -135,24 +148,56 @@ CMakeFiles/VMVS.dir/src/main.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/VMVS.dir/src/main.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/himalaya/Documents/VMVS/src/main.cpp -o CMakeFiles/VMVS.dir/src/main.cpp.s
 
+CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: CMakeFiles/VMVS.dir/flags.make
+CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o: ../src/velocity_calculator.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_8) "Building CXX object CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o -c /home/himalaya/Documents/VMVS/src/velocity_calculator.cpp
+
+CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/himalaya/Documents/VMVS/src/velocity_calculator.cpp > CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.i
+
+CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/himalaya/Documents/VMVS/src/velocity_calculator.cpp -o CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.s
+
+CMakeFiles/VMVS.dir/src/visibility.cpp.o: CMakeFiles/VMVS.dir/flags.make
+CMakeFiles/VMVS.dir/src/visibility.cpp.o: ../src/visibility.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_9) "Building CXX object CMakeFiles/VMVS.dir/src/visibility.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/VMVS.dir/src/visibility.cpp.o -c /home/himalaya/Documents/VMVS/src/visibility.cpp
+
+CMakeFiles/VMVS.dir/src/visibility.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/VMVS.dir/src/visibility.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/himalaya/Documents/VMVS/src/visibility.cpp > CMakeFiles/VMVS.dir/src/visibility.cpp.i
+
+CMakeFiles/VMVS.dir/src/visibility.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/VMVS.dir/src/visibility.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/himalaya/Documents/VMVS/src/visibility.cpp -o CMakeFiles/VMVS.dir/src/visibility.cpp.s
+
 # Object files for target VMVS
 VMVS_OBJECTS = \
 "CMakeFiles/VMVS.dir/src/base.cpp.o" \
 "CMakeFiles/VMVS.dir/src/display.cpp.o" \
+"CMakeFiles/VMVS.dir/src/evolution.cpp.o" \
 "CMakeFiles/VMVS.dir/src/filesio.cpp.o" \
 "CMakeFiles/VMVS.dir/src/grid3d.cpp.o" \
 "CMakeFiles/VMVS.dir/src/init.cpp.o" \
-"CMakeFiles/VMVS.dir/src/main.cpp.o"
+"CMakeFiles/VMVS.dir/src/main.cpp.o" \
+"CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o" \
+"CMakeFiles/VMVS.dir/src/visibility.cpp.o"
 
 # External object files for target VMVS
 VMVS_EXTERNAL_OBJECTS =
 
 VMVS: CMakeFiles/VMVS.dir/src/base.cpp.o
 VMVS: CMakeFiles/VMVS.dir/src/display.cpp.o
+VMVS: CMakeFiles/VMVS.dir/src/evolution.cpp.o
 VMVS: CMakeFiles/VMVS.dir/src/filesio.cpp.o
 VMVS: CMakeFiles/VMVS.dir/src/grid3d.cpp.o
 VMVS: CMakeFiles/VMVS.dir/src/init.cpp.o
 VMVS: CMakeFiles/VMVS.dir/src/main.cpp.o
+VMVS: CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o
+VMVS: CMakeFiles/VMVS.dir/src/visibility.cpp.o
 VMVS: CMakeFiles/VMVS.dir/build.make
 VMVS: /usr/local/lib/libopencv_stitching.so.3.4.7
 VMVS: /usr/local/lib/libopencv_superres.so.3.4.7
@@ -335,7 +380,7 @@ VMVS: /usr/local/lib/libvtkCommonCore-8.2.so.1
 VMVS: /usr/local/lib/libvtkfreetype-8.2.so.1
 VMVS: /usr/local/lib/libvtkzlib-8.2.so.1
 VMVS: CMakeFiles/VMVS.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable VMVS"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/himalaya/Documents/VMVS/cmake-build-debug/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable VMVS"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/VMVS.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

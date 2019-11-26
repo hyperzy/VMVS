@@ -177,6 +177,33 @@ src/display.cpp.s:
 	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/display.cpp.s
 .PHONY : src/display.cpp.s
 
+src/evolution.o: src/evolution.cpp.o
+
+.PHONY : src/evolution.o
+
+# target to build an object file
+src/evolution.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/evolution.cpp.o
+.PHONY : src/evolution.cpp.o
+
+src/evolution.i: src/evolution.cpp.i
+
+.PHONY : src/evolution.i
+
+# target to preprocess a source file
+src/evolution.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/evolution.cpp.i
+.PHONY : src/evolution.cpp.i
+
+src/evolution.s: src/evolution.cpp.s
+
+.PHONY : src/evolution.s
+
+# target to generate assembly for a file
+src/evolution.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/evolution.cpp.s
+.PHONY : src/evolution.cpp.s
+
 src/filesio.o: src/filesio.cpp.o
 
 .PHONY : src/filesio.o
@@ -285,6 +312,60 @@ src/main.cpp.s:
 	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/main.cpp.s
 .PHONY : src/main.cpp.s
 
+src/velocity_calculator.o: src/velocity_calculator.cpp.o
+
+.PHONY : src/velocity_calculator.o
+
+# target to build an object file
+src/velocity_calculator.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.o
+.PHONY : src/velocity_calculator.cpp.o
+
+src/velocity_calculator.i: src/velocity_calculator.cpp.i
+
+.PHONY : src/velocity_calculator.i
+
+# target to preprocess a source file
+src/velocity_calculator.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.i
+.PHONY : src/velocity_calculator.cpp.i
+
+src/velocity_calculator.s: src/velocity_calculator.cpp.s
+
+.PHONY : src/velocity_calculator.s
+
+# target to generate assembly for a file
+src/velocity_calculator.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/velocity_calculator.cpp.s
+.PHONY : src/velocity_calculator.cpp.s
+
+src/visibility.o: src/visibility.cpp.o
+
+.PHONY : src/visibility.o
+
+# target to build an object file
+src/visibility.cpp.o:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/visibility.cpp.o
+.PHONY : src/visibility.cpp.o
+
+src/visibility.i: src/visibility.cpp.i
+
+.PHONY : src/visibility.i
+
+# target to preprocess a source file
+src/visibility.cpp.i:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/visibility.cpp.i
+.PHONY : src/visibility.cpp.i
+
+src/visibility.s: src/visibility.cpp.s
+
+.PHONY : src/visibility.s
+
+# target to generate assembly for a file
+src/visibility.cpp.s:
+	$(MAKE) -f CMakeFiles/VMVS.dir/build.make CMakeFiles/VMVS.dir/src/visibility.cpp.s
+.PHONY : src/visibility.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -300,6 +381,9 @@ help:
 	@echo "... src/display.o"
 	@echo "... src/display.i"
 	@echo "... src/display.s"
+	@echo "... src/evolution.o"
+	@echo "... src/evolution.i"
+	@echo "... src/evolution.s"
 	@echo "... src/filesio.o"
 	@echo "... src/filesio.i"
 	@echo "... src/filesio.s"
@@ -312,6 +396,12 @@ help:
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
+	@echo "... src/velocity_calculator.o"
+	@echo "... src/velocity_calculator.i"
+	@echo "... src/velocity_calculator.s"
+	@echo "... src/visibility.o"
+	@echo "... src/visibility.i"
+	@echo "... src/visibility.s"
 .PHONY : help
 
 
