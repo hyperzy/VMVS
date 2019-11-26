@@ -15,12 +15,36 @@ vector
 ../include/grid3d.h
 base.h
 ../include/base.h
+velocity_calculator.h
+../include/velocity_calculator.h
 list
 -
 queue
 -
 
+../include/velocity_calculator.h
+base.h
+../include/base.h
+visibility.h
+../include/visibility.h
+
+../include/visibility.h
+base.h
+../include/base.h
+
 /home/himalaya/Documents/VMVS/src/grid3d.cpp
 grid3d.h
 /home/himalaya/Documents/VMVS/src/grid3d.h
+omp.h
+-
+queue
+-
+cassert
+-
+algorithm
+-
+cmath
+-
+iostream
+-
 
