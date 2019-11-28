@@ -191,7 +191,7 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     auto nx = (DimUnit)((extent[1] - extent[0]) / box.resolution);
     auto ny = (DimUnit)((extent[3] - extent[2]) / box.resolution);
     auto nz = (DimUnit)((extent[5] - extent[4]) / box.resolution);
-//    nx = ny = nz = 36;
+    nx = ny = nz = 36;
     cout << "height: " << nx << ", width: " << ny << ", depth: " << nz << endl;
     vector<Point3> bound_coord = box.Get_bound_coord();
     Point3 origin = bound_coord[0];

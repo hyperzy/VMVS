@@ -11,8 +11,10 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="2D case completed">
-      <change beforePath="$PROJECT_DIR$/src/evolution.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/evolution.cpp" afterDir="false" />
+    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="Fixed a bug concerned with zero value front points' adjacent points">
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/grid3d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid3d.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/init.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -202,7 +204,8 @@
     <MESSAGE value="Changed 2d array to 1d and updated the algorithm." />
     <MESSAGE value="3D case initialize" />
     <MESSAGE value="rendering finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="rendering finished" />
+    <MESSAGE value="Fixed a bug concerned with zero value front points' adjacent points" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a bug concerned with zero value front points' adjacent points" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -231,16 +234,6 @@
           <url>file://$PROJECT_DIR$/src/init.cpp</url>
           <line>239</line>
           <option name="timeStamp" value="11" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>247</line>
-          <option name="timeStamp" value="12" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>176</line>
-          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

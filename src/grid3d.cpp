@@ -115,6 +115,7 @@ bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i>
     front_dir.clear();
     assert(isValidRange(i, j, k));
     auto current_val = this->phi[this->Index(i, j, k)];
+    if (current_val == 0) return true;
     int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
                        {0, -1, 0}, {0, 1, 0},
                        {0, 0, -1}, {0, 0, 1}};
@@ -163,15 +164,15 @@ void Grid3d::Marching(std::priority_queue<PointKeyVal> &close_set, bool inside)
             auto idx_ijk = this->Index(i, j, k);
             // check necessity of the grid to be computed
             if (this->isValidRange(i, j, k) && this->grid_prop[idx_ijk].fmm_status != FMM_Status::ACCEPT
-                                            && this->grid_prop[idx_ijk].fmm_status != FMM_Status::OTHER_SIDE) {
+                && this->grid_prop[idx_ijk].fmm_status != FMM_Status::OTHER_SIDE) {
                 // smaller value in x, y, z direction respectively
                 vector<dtype> smaller_val(3, 0);
                 smaller_val[0] = min(this->isValidRange(i - 1, j, k) ? this->phi[this->Index(i - 1, j, k)] : INF,
-                                          this->isValidRange(i + 1, j, k) ? this->phi[this->Index(i + 1, j, k)] : INF);
+                                     this->isValidRange(i + 1, j, k) ? this->phi[this->Index(i + 1, j, k)] : INF);
                 smaller_val[1] = min(this->isValidRange(i, j - 1, k) ? this->phi[this->Index(i, j - 1, k)] : INF,
-                                          this->isValidRange(i, j + 1, k) ? this->phi[this->Index(i, j + 1, k)] : INF);
+                                     this->isValidRange(i, j + 1, k) ? this->phi[this->Index(i, j + 1, k)] : INF);
                 smaller_val[2] = min(this->isValidRange(i, j, k - 1) ? this->phi[this->Index(i, j, k - 1)] : INF,
-                                          this->isValidRange(i, j, k + 1) ? this->phi[this->Index(i, j, k + 1)] : INF);
+                                     this->isValidRange(i, j, k + 1) ? this->phi[this->Index(i, j, k + 1)] : INF);
                 // ascending order
                 // so 'c' is the largest
                 std::sort(smaller_val.begin(), smaller_val.end());
@@ -237,7 +238,7 @@ void Grid3d::Extend_velocity()
         auto idx_ijk = this->Index(i, j, k);
         // first complete natural speed part
         if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
-               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
+            && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL) {
             // central difference
             assert(isValidRange(i + 1, j, k) && isValidRange(i - 1, j, k));
             dtype phi_x = (this->phi[this->Index(i + 1, j, k)] - this->phi[this->Index(i - 1, j, k)]) / 2;
@@ -251,7 +252,7 @@ void Grid3d::Extend_velocity()
                 dtype phi_zz = this->phi[this->Index(i, j, k + 1)] + this->phi[this->Index(i, j, k - 1)] - 2 * this->phi[idx_ijk];
                 assert(isValidRange(i + 1, j + 1, k) && isValidRange(i + 1, j - 1, k) && isValidRange(i - 1, j + 1, k) && isValidRange(i - 1, j - 1, k));
                 dtype phi_xy = (this->phi[this->Index(i + 1, j + 1, k)] - this->phi[this->Index(i - 1, j + 1, k)]
-                                 - this->phi[this->Index(i + 1, j - 1, k)] + this->phi[this->Index(i - 1, j - 1, k)]) / 4;
+                                - this->phi[this->Index(i + 1, j - 1, k)] + this->phi[this->Index(i - 1, j - 1, k)]) / 4;
                 assert(isValidRange(i, j + 1, k + 1) && isValidRange(i, j + 1, k - 1) && isValidRange(i, j - 1, k + 1) && isValidRange(i, j - 1, k - 1));
                 dtype phi_yz = (this->phi[this->Index(i, j + 1, k + 1)] - this->phi[this->Index(i, j - 1, k + 1)]
                                 - this->phi[this->Index(i, j + 1, k - 1)] + this->phi[this->Index(i, j - 1, k - 1)]) / 4;
@@ -259,21 +260,21 @@ void Grid3d::Extend_velocity()
                 dtype phi_xz = (this->phi[this->Index(i + 1, j, k + 1)] - this->phi[this->Index(i - 1, j, k + 1)]
                                 - this->phi[this->Index(i + 1, j, k - 1)] + this->phi[this->Index(i - 1, j, k - 1)]) / 4;
                 val = ((pow(phi_y, 2) + pow(phi_z, 2)) * phi_xx
-                                            + (pow(phi_x, 2) + pow(phi_z, 2)) * phi_yy
-                                            + (pow(phi_x, 2) + pow(phi_y, 2)) * phi_zz
-                                            - 2 * phi_x * phi_y * phi_xy
-                                            - 2 * phi_x * phi_z * phi_xz
-                                            - 2 * phi_y * phi_z * phi_yz)
-                                           / (pow(phi_x * phi_x + phi_y * phi_y + phi_z * phi_z, 1.5));
+                       + (pow(phi_x, 2) + pow(phi_z, 2)) * phi_yy
+                       + (pow(phi_x, 2) + pow(phi_y, 2)) * phi_zz
+                       - 2 * phi_x * phi_y * phi_xy
+                       - 2 * phi_x * phi_z * phi_xz
+                       - 2 * phi_y * phi_z * phi_yz)
+                      / (pow(phi_x * phi_x + phi_y * phi_y + phi_z * phi_z, 1.5));
                 this->Phi[idx_ijk] = val;
             }
             else {
                 this->Phi[idx_ijk] = 0;
             }
         }
-        // extension speed
+            // extension speed
         else if (this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
-                    && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::EXTENSION) {
+                 && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::EXTENSION) {
             // ensure upwind scheme
             if (this->phi[idx_ijk] > 0) {
                 IdxType argmin_i, argmin_j, argmin_k;
@@ -306,7 +307,7 @@ void Grid3d::Extend_velocity()
                 dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)];
                 if (val_z_dir < 0) val_z_dir = 0;
                 val = (this->Phi[this->Index(argmin_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmin_j, k)] * val_y_dir
-                            + this->Phi[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+                       + this->Phi[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
 //                val = (this->velocity[this->Index(argmin_i, j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(argmin_i, j, k)])
 //                                           + this->velocity[this->Index(i, argmin_j, k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, argmin_j, k)])
 //                                           + this->velocity[this->Index(i, j, argmin_k)] * (this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)]))
@@ -357,7 +358,7 @@ Grid3d* Grid3d::Reinitialize()
 }
 
 dtype Grid3d::Compute_discrepancy(IdxType i, IdxType j, IdxType k) {
-    
+
 }
 
 Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
@@ -384,7 +385,7 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
                         // in 3-d case, we need to exam 6 directions
                         vector<cv::Vec3i> front_dir;
                         front_dir.reserve(6);
-                        if (init_grid->isFrontHere(i, j, k, front_dir) != 0) {
+                        if (init_grid->isFrontHere(i, j, k, front_dir)) {
                             //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
                             // narrowband status, phival, velocity
                             // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
@@ -392,13 +393,20 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit)
                             // put >0 and  <0 into different set so that two direction fmm can be done.
                             if (init_grid->phi[idx_ijk] > 0) {
                                 close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
-                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                if (front_dir.size() == 1 && init_grid->phi[init_grid->Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])] == 0)
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                                else
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
                             }
                             else if (init_grid->phi[idx_ijk] < 0) {
                                 close_pq_neg.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
-                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                if (front_dir.size() == 1 && init_grid->phi[init_grid->Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])] == 0)
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                                else
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
                             }
                             else {
+                                close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
                                 new_grid->marching_sequence.emplace_back(IndexSet{i, j, k});
 //                                new_grid->front.emplace_back(IndexSet{i, j, k});
                             }
@@ -463,17 +471,17 @@ int Determine_front_type(std::vector<cv::Vec3i> &front_dir, std::vector<int> &sp
             else
                 // num_ones = 1
                 assert(num_ones == 1);
-                // todo: efficiency could be improved here. Maybe use hasp table and change the logic
-                // there should be only 1 non_zero_pos
-                assert(non_zero_pos.size() == 1);
-                for (const auto &iter_1 : non_zero_pos) {
-                    // 3 here is the size of front_dir
-                    for (int i = 0; i < 3; i++) {
-                        if (abs(front_dir[i][iter_1]) == 1)
-                            special_grid_index.emplace_back(i);
-                    }
+            // todo: efficiency could be improved here. Maybe use hasp table and change the logic
+            // there should be only 1 non_zero_pos
+            assert(non_zero_pos.size() == 1);
+            for (const auto &iter_1 : non_zero_pos) {
+                // 3 here is the size of front_dir
+                for (int i = 0; i < 3; i++) {
+                    if (abs(front_dir[i][iter_1]) == 1)
+                        special_grid_index.emplace_back(i);
                 }
-                return TYPE_C2;
+            }
+            return TYPE_C2;
         case 4:
             if (num_ones == 0)
                 return TYPE_D2;
@@ -537,7 +545,7 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
             break;
         case TYPE_B1:
             assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
-                    && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
+                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
             // use point-line distance for approximation
             dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
                                                                                                      j + front_dir[0][1],
@@ -549,7 +557,7 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
             break;
         case TYPE_B2:
             assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
-                    && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
+                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
             // use point-line distance for approximation
             dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
                                                                                                      j + front_dir[0][1],
@@ -561,8 +569,8 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
             break;
         case TYPE_C1:
             assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
-                    && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])
-                    && old_grid->isValidRange(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2]));
+                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])
+                   && old_grid->isValidRange(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2]));
             // precisely compute point-surface distance
             dist1 = old_grid->phi[idx_ijk] / (old_grid->phi[idx_ijk] - old_grid->phi[old_grid->Index(i + front_dir[0][0],
                                                                                                      j + front_dir[0][1],
@@ -685,7 +693,7 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
             temp_dist1 = min(dist2, dist3);
             temp_dist2 = min(dist4, dist5);
             new_grid->phi[idx_ijk] = sqrt(pow(dist1 * temp_dist1 * temp_dist2, 2) /
-                                                  (pow(dist1, 2) + pow(temp_dist1, 2) + pow(temp_dist2, 2)));
+                                          (pow(dist1, 2) + pow(temp_dist1, 2) + pow(temp_dist2, 2)));
             break;
         case TYPE_F:
             // precisely compute point-surface distance
@@ -717,7 +725,7 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
             temp_dist2 = min(dist3, dist4);
             temp_dist3 = min(dist5, dist6);
             new_grid->phi[idx_ijk] = sqrt(pow(temp_dist1 * temp_dist2 * temp_dist3, 2) /
-                                                  (pow(temp_dist1, 2) + pow(temp_dist2, 2) + pow(temp_dist3, 2)));
+                                          (pow(temp_dist1, 2) + pow(temp_dist2, 2) + pow(temp_dist3, 2)));
             // deal with singular point (the value depending on band width) I chose threshold 1.8 here
             if (new_grid->phi[idx_ijk] > 1.8) new_grid->phi[idx_ijk] = 1;
             break;
