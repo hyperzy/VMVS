@@ -136,6 +136,7 @@ public:
      */
     bool isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir) const;
 
+    bool isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir, std::vector<cv::Vec3i> &aux_front_dir) const;
 
 
     /**
@@ -148,8 +149,7 @@ public:
 
     void Marching_neg(std::priority_queue<PointKeyVal> &close_set);
 
-
-
+    dtype Determine_velocity_negative(IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir);
 
     void Extend_velocity(PhiCalculator *velocity_calculator);
     void Update_velocity(PhiCalculator *velocity_calculator);
@@ -184,6 +184,5 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid,
                               IdxType i, IdxType j, IdxType k,
                               std::vector<cv::Vec3i> &front_dir);
 
-dtype Determine_velocity_negative(const std::vector<dtype> &phi, IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir);
 
 #endif //VMVS_GRID3D_H

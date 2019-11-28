@@ -6,7 +6,6 @@
 #include <omp.h>
 #include <queue>
 #include <chrono>
-//#define NDEBUG
 #include <cassert>
 #include <algorithm>
 #include <cmath>
@@ -123,6 +122,38 @@ bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i>
         if (!isValidRange(i + iter[0], j + iter[1], k + iter[2])) { continue; }
         assert(isValidRange(i + iter[0], j + iter[1], k + iter[2]));
         if (current_val * this->phi[this->Index(i + iter[0], j + iter[1], k + iter[2])] <= 0) {
+            front_dir.emplace_back(cv::Vec3i(iter[0], iter[1], iter[2]));
+            is_front_here = true;
+        }
+    }
+    return is_front_here;
+}
+
+bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir, std::vector<cv::Vec3i> &aux_front_dir) const
+{
+//    unsigned short res = 0;
+//    auto current_val = this->phi[this->Index(i, j, k)];
+//    res = (current_val * this->phi[this->Index(i - 1, j, k)] <= 0) |
+//            (current_val * this->phi[this->Index(i, j - 1, k)] <= 0) << 1u |
+//            (current_val * this->phi[this->Index(i + 1, j, k)] <= 0) << 2u |
+//            (current_val * this->phi[this->Index(i, j, k - 1)] <= 0) << 3u |
+//            (current_val * this->phi[this->Index(i, j + 1, k)] <= 0) << 4u |
+//            (current_val * this->phi[this->Index(i, j, k + 1)] <= 0) << 5u;
+
+    bool is_front_here = false;
+    front_dir.clear();
+    assert(isValidRange(i, j, k));
+    auto current_val = this->phi[this->Index(i, j, k)];
+    int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
+                       {0, -1, 0}, {0, 1, 0},
+                       {0, 0, -1}, {0, 0, 1}};
+    for (auto &iter : index) {
+        if (!isValidRange(i + iter[0], j + iter[1], k + iter[2])) { continue; }
+        assert(isValidRange(i + iter[0], j + iter[1], k + iter[2]));
+        auto exam_val = current_val * this->phi[this->Index(i + iter[0], j + iter[1], k + iter[2])];
+        if (exam_val <= 0) {
+            if (exam_val == 0)
+                aux_front_dir.emplace_back(iter[0], iter[1], iter[2]);
             front_dir.emplace_back(cv::Vec3i(iter[0], iter[1], iter[2]));
             is_front_here = true;
         }
@@ -444,39 +475,119 @@ void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
     cout << "start extend velocity" << endl;
     //    auto start = chrono::high_resolution_clock::now();
     auto start = omp_get_wtime();
-    if (!velocity_calculator)
-        return;
-#pragma omp parallel for default(none) shared(velocity_calculator)
+    if (!velocity_calculator) { return; }
+//#pragma omp parallel for default(none) shared(velocity_calculator)
     for (unsigned long idx = 0; idx < this->pos_front_sequence.size(); idx++) {
         auto &point = this->pos_front_sequence[idx];
         IdxType i = point.i;
         IdxType j = point.j;
         IdxType k = point.k;
-    //        assert(isValidRange(i, j, k));
+//        assert(isValidRange(i, j, k));
         auto idx_ijk = this->Index(i, j, k);
-    //        assert(this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
-    //               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL);
-    //        auto start = chrono::high_resolution_clock::now();
+//        assert(this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
+//               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL);
+//        auto start = chrono::high_resolution_clock::now();
         this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
-    //        auto stop = chrono::high_resolution_clock::now();
-    //        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
-    //        cout << "velocity extension cost time: " << duration.count() << endl;
-    //        assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
+//        auto stop = chrono::high_resolution_clock::now();
+//        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
+//        cout << "velocity extension cost time: " << duration.count() << endl;
+//        assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
     }
-#pragma omp barrier
+//#pragma omp barrier
 
-    // todo :negative part
-    //  for adjacent front with negative val, we use the scheme introduced in Sethian's paper to keep the property
+#pragma omp parallel for default(none) shared(velocity_calculator)
+    for (unsigned long idx = 0; idx < this->neg_front_sequence.size(); idx++) {
+        auto &point = this->neg_front_sequence[idx];
+        IdxType i = point.i;
+        IdxType j = point.j;
+        IdxType k = point.k;
+//        assert(isValidRange(i, j, k));
+        auto idx_ijk = this->Index(i, j, k);
+//        assert(this->grid_prop[idx_ijk].nb_status != NarrowBandStatus::BOUNDARY
+//               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL);
+        vector<cv::Vec3i> front_dir;
+        front_dir.reserve(6);
+//        assert(isFrontHere(i, j, k, front_dir) != 0);
+        isFrontHere(i, j, k, front_dir);
+        Determine_velocity_negative(i, j, k, front_dir);
+    }
     //  claimed in the paper
     //    vector<cv::Vec3i> front_dir;
     //    front_dir.reserve(6);
     //    this->Phi[idx] = Determine_velocity_negative(this->phi, i, j, k, front_dir);
     // this->Phi[neg]
     // todo: neg extension part
+#pragma omp barrier
+    for (unsigned long idx = 0; idx < this->neg_marching_sequence.size(); idx++) {
+        auto &point = this->neg_marching_sequence[idx];
+        IdxType i = point.i;
+        IdxType j = point.j;
+        IdxType k = point.k;
+//        assert(isValidRange(i, j, k));
+        auto idx_ijk = this->Index(i, j, k);
+        IdxType argmax_i = this->phi[this->Index(i - 1, j, k)] >= this->phi[this->Index(i + 1, j, k)] ? i - 1 : i + 1;
+//        assert(isValidRange(i, j + 1, k) && isValidRange(i, j - 1, k));
+        IdxType argmax_j = this->phi[this->Index(i, j - 1, k)] >= this->phi[this->Index(i, j + 1, k)] ? j - 1 : j + 1;
+//        assert(isValidRange(i, j, k + 1) && isValidRange(i, j, k - 1));
+        IdxType argmax_k = this->phi[this->Index(i, j, k - 1)] >= this->phi[this->Index(i, j, k + 1)] ? k - 1 : k + 1;
+//        assert(isValidRange(argmax_i, j, k));
+        dtype val_x_dir = this->phi[idx_ijk] - this->phi[this->Index(argmax_i, j, k)];
+        if (val_x_dir > 0) val_x_dir = 0;
+//        assert(isValidRange(i, argmax_j, k));
+        dtype val_y_dir = this->phi[idx_ijk] - this->phi[this->Index(i, argmax_j, k)];
+        if (val_y_dir > 0) val_y_dir = 0;
+//        assert(isValidRange(i, j, argmax_k));
+        dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmax_k)];
+        if (val_z_dir > 0) val_z_dir = 0;
+        dtype val = (this->Phi[this->Index(argmax_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmax_j, k)] * val_y_dir
+               + this->Phi[this->Index(i, j, argmax_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+        Phi[idx_ijk] = val;
+    }
     // todo: pos extension part
+//#pragma omp parallel for default(none)
+    for (unsigned long idx = 0; idx < pos_marching_sequence.size(); idx++) {
+        IdxType argmin_i, argmin_j, argmin_k;
+        auto &point = this->pos_marching_sequence[idx];
+        IdxType i = point.i;
+        IdxType j = point.j;
+        IdxType k = point.k;
+//        assert(isValidRange(i, j, k));
+        auto idx_ijk = Index(i, j, k);
+        if (i - 1 >= 0 && i + 1 < this->_height) {
+//            assert(isValidRange(i + 1, j, k) && isValidRange(i - 1, j, k));
+            argmin_i = this->phi[this->Index(i - 1, j, k)] <= this->phi[this->Index(i + 1, j, k)] ? i - 1 : i + 1;
+        }
+        else {
+            argmin_i = i - 1 < 0 ? i + 1 : i - 1; }
+        if (j - 1 >= 0 && j + 1 < this->_width) {
+//            assert(isValidRange(i, j + 1, k) && isValidRange(i, j - 1, k));
+            argmin_j = this->phi[this->Index(i, j - 1, k)] <= this->phi[this->Index(i, j + 1, k)] ? j - 1 : j + 1;
+        }
+        else {
+            argmin_j = j - 1 < 0 ? j + 1 : j - 1;}
+        if (k - 1 >= 0 && k + 1 < this->_depth) {
+//            assert(isValidRange(i, j, k + 1) && isValidRange(i, j, k - 1));
+            argmin_k = this->phi[this->Index(i, j, k - 1)] <= this->phi[this->Index(i, j, k + 1)] ? k - 1 : k + 1;
+        }
+        else {
+            argmin_k = k - 1 < 0 ? k + 1 : k - 1;}
+        // determine if fmm is reduced to 2d case, so there will be one direction not satisfying upwind scheme
+//        assert(isValidRange(argmin_i, j, k));
+        dtype val_x_dir = this->phi[idx_ijk] - this->phi[this->Index(argmin_i, j, k)];
+        if (val_x_dir < 0) val_x_dir = 0;
+//        assert(isValidRange(i, argmin_j, k));
+        dtype val_y_dir = this->phi[idx_ijk] - this->phi[this->Index(i, argmin_j, k)];
+        if (val_y_dir < 0) val_y_dir = 0;
+//        assert(isValidRange(i, j, argmin_k));
+        dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)];
+        if (val_z_dir < 0) val_z_dir = 0;
+        dtype val = (this->Phi[this->Index(argmin_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmin_j, k)] * val_y_dir
+               + this->Phi[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+        Phi[idx_ijk] = val;
+    }
 
     cout << "velocity extension costs time: " << omp_get_wtime() - start << endl;
-    cout << "finished extension" << endl;
+//    cout << "finished extension" << endl;
 }
 
 void Grid3d::Update_velocity(PhiCalculator *velocity_calculator)
@@ -515,7 +626,11 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
                         // in 3-d case, we need to exam 6 directions
                         vector<cv::Vec3i> front_dir;
                         front_dir.reserve(6);
-                        if (init_grid->isFrontHere(i, j, k, front_dir) != 0) {
+                        // if the in only one front direction the opposite value is 0, then we cannot put it into front_sequence
+                        // since it will be the extension one
+                        vector<cv::Vec3i> aux_front_dir;
+                        aux_front_dir.reserve(6);
+                        if (init_grid->isFrontHere(i, j, k, front_dir, aux_front_dir) != 0) {
                             //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
                             // narrowband status, phival, velocity
                             // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
@@ -524,6 +639,7 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
                             if (init_grid->phi[idx_ijk] > 0) {
                                 close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
                                 new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                if ()
                                 new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
                             }
                             else if (init_grid->phi[idx_ijk] < 0) {
@@ -565,7 +681,7 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
 
 // return the front type
 //// todo : design a data structure to store special points' index or normal points' index
-int Determine_front_type(std::vector<cv::Vec3i> &front_dir, std::vector<int> &special_grid_index)
+int Determine_front_type(const std::vector<cv::Vec3i> &front_dir, std::vector<int> &special_grid_index)
 {
     cv::Vec3i sum(0, 0, 0);
     int num_ones = 0;
@@ -640,6 +756,7 @@ int Determine_front_type(std::vector<cv::Vec3i> &front_dir, std::vector<int> &sp
     }
 }
 
+// todo: efficiency can be improved by store pow(x, 2) into a variable
 void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, IdxType j, IdxType k,
                               std::vector<cv::Vec3i> &front_dir)
 {
@@ -861,7 +978,257 @@ void Determine_front_property(Grid3d *old_grid, Grid3d *new_grid, IdxType i, Idx
     assert (!isnan(new_grid->phi[idx_ijk]));
 }
 
-dtype Determine_velocity_negative(const std::vector<dtype> &phi, IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir)
+dtype Grid3d::Determine_velocity_negative(IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir)
 {
+    auto idx_ijk = this->Index(i, j, k);
+    vector<int> special_grid_index;
+    special_grid_index.reserve(2);
+    auto front_type = Determine_front_type(front_dir, special_grid_index);
+    dtype dist1, dist2, dist3, dist4, dist5, dist6, temp_dist1, temp_dist2, temp_dist3;
+    dtype Phi1, Phi2, Phi3, Phi4, Phi5, Phi6, temp_Phi1, temp_Phi2, temp_Phi3;
+    int s_index1, s_index2, r_index1, r_index2, r_index3, r_index4;
+    switch (front_type) {
+        // refer to head file for the definition of each type
+        case TYPE_A:
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1],  k + front_dir[0][2]));
+            // use point-line distance for approximation
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk]
+                                              - this->phi[Index(i + front_dir[0][0],
+                                                                              j + front_dir[0][1],
+                                                                              k + front_dir[0][2])]);
+            Phi[idx_ijk] = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            break;
+        case TYPE_B1:
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
+//                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
+            // use point-line distance for approximation
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            Phi1 = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            Phi2 = Phi[Index(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])];
+            Phi[idx_ijk] = (pow(dist1, 2) * Phi2 + pow(dist2, 2) * Phi1) / (pow(dist1, 2) + pow(dist2, 2));
+            break;
+        case TYPE_B2:
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
+//                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2]));
+            // use point-line distance for approximation
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            Phi1 = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            Phi2 = Phi[Index(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])];
+            Phi[idx_ijk] = dist1 < dist2 ? Phi1 : Phi2;
+            break;
+        case TYPE_C1:
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
+//                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])
+//                   && old_grid->isValidRange(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2]));
+            // precisely compute point-surface distance
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[2][0],
+                                                                                                     j + front_dir[2][1],
+                                                                                                     k + front_dir[2][2])]);
+            Phi1 = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            Phi2 = Phi[Index(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])];
+            Phi3 = Phi[Index(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2])];
+            Phi[idx_ijk] = (pow(dist1 * dist2, 2)  * Phi3 + pow(dist1 * dist3, 2) * Phi2 + pow(dist2 * dist3, 2) * Phi1)
+                            / (pow(dist1, 2) + pow(dist2, 2) + pow(dist3, 2));
+            break;
+        case TYPE_C2:
+
+            // use point-line distance for approximation.
+            // In this case, we need to find the special grid point, which is the peak point of a triangle
+            // special point index
+            s_index1 = special_grid_index[0];
+            // regular point index
+            r_index1 = (s_index1 + 1) % 3;
+            // ensure the result is positive
+            r_index2 = ((s_index1 - 1) % 3 + 3) % 3;
+//            assert(old_grid->isValidRange(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2]));
+
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            Phi1 = Phi[Index(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])];
+            Phi2 = Phi[Index(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])];
+            Phi3 = Phi[Index(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2])];
+            temp_dist1 = min(dist2, dist3);
+            temp_Phi1 = dist2 < dist3 ? Phi2 : Phi3;
+            Phi[idx_ijk] = (pow(dist1, 2) * temp_Phi1 + pow(temp_dist1, 2) * Phi1) / (pow(dist1, 2) + pow(temp_dist1, 2));
+            break;
+        case TYPE_D1:
+
+            // precisely compute point-surface distance
+            // In this case, we need to find two special grid points, which constitute common edge of two tetrahedrons
+            // special points index
+            s_index1 = special_grid_index[0];
+            s_index2 = special_grid_index[1];
+            // regular points' index
+            r_index1 = (s_index1 + 2) % 4;
+            r_index2 = (s_index2 + 2) % 4;
+//            assert(old_grid->isValidRange(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[s_index2][0], j + front_dir[s_index2][1], k + front_dir[s_index2][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2]));
+
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[s_index2][0],
+                                                                                                     j + front_dir[s_index2][1],
+                                                                                                     k + front_dir[s_index2][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist4 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            Phi1 = Phi[Index(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])];
+            Phi2 = Phi[Index(i + front_dir[s_index2][0], j + front_dir[s_index2][1], k + front_dir[s_index2][2])];
+            Phi3 = Phi[Index(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])];
+            Phi4 = Phi[Index(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2])];
+            temp_dist1 = min(dist3, dist4);
+            temp_Phi1 = dist3 < dist4 ? Phi3 : Phi4;
+            Phi[idx_ijk] = (pow(dist1 * dist2, 2)  * temp_Phi1 + pow(dist1 * temp_dist1, 2) * Phi2 + pow(dist2 * temp_dist1, 2) * Phi1)
+                           / (pow(dist1, 2) + pow(dist2, 2) + pow(temp_dist1, 2));
+            break;
+        case TYPE_D2:
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
+//                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])
+//                   && old_grid->isValidRange(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2])
+//                   && old_grid->isValidRange(i + front_dir[3][0], j + front_dir[3][1], k + front_dir[3][2]));
+            // use point-line distance to approximate
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[2][0],
+                                                                                                     j + front_dir[2][1],
+                                                                                                     k + front_dir[2][2])]);
+            dist4 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[3][0],
+                                                                                                     j + front_dir[3][1],
+                                                                                                     k + front_dir[3][2])]);
+            Phi1 = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            Phi2 = Phi[Index(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])];
+            Phi3 = Phi[Index(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2])];
+            Phi4 = Phi[Index(i + front_dir[3][0], j + front_dir[3][1], k + front_dir[3][2])];
+            temp_dist1 = min(dist1, dist2);
+            temp_dist2 = min(dist3, dist4);
+            temp_Phi1 = dist1 < dist2 ? Phi1 : Phi2;
+            temp_Phi2 = dist3 < dist4 ? Phi3 : Phi4;
+            Phi[idx_ijk] = (pow(temp_dist1, 2) * temp_Phi2 + pow(temp_dist2, 2) * temp_Phi1) / (pow(temp_dist1, 2) + pow(temp_dist2, 2));
+            break;
+        case TYPE_E:
+            // precisely compute point-surface distance
+            s_index1 = special_grid_index[0];
+            r_index1 = (s_index1 + 1) % 5;
+            r_index2 = (s_index1 + 2) % 5;
+            r_index3 = (s_index1 + 3) % 5;
+            r_index4 = (s_index1 + 4) % 5;
+//            assert(old_grid->isValidRange(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index3][0], j + front_dir[r_index3][1], k + front_dir[r_index3][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2])
+//                   && old_grid->isValidRange(i + front_dir[r_index4][0], j + front_dir[r_index4][1], k + front_dir[r_index4][2]));
+
+            // dist1 is the peak point of the large tetrahedron
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[s_index1][0],
+                                                                                                     j + front_dir[s_index1][1],
+                                                                                                     k + front_dir[s_index1][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index1][0],
+                                                                                                     j + front_dir[r_index1][1],
+                                                                                                     k + front_dir[r_index1][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index2][0],
+                                                                                                     j + front_dir[r_index2][1],
+                                                                                                     k + front_dir[r_index2][2])]);
+            dist4 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index3][0],
+                                                                                                     j + front_dir[r_index3][1],
+                                                                                                     k + front_dir[r_index3][2])]);
+            dist5 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[r_index4][0],
+                                                                                                     j + front_dir[r_index4][1],
+                                                                                                     k + front_dir[r_index4][2])]);
+            Phi1 = Phi[Index(i + front_dir[s_index1][0], j + front_dir[s_index1][1], k + front_dir[s_index1][2])];
+            Phi2 = Phi[Index(i + front_dir[r_index1][0], j + front_dir[r_index1][1], k + front_dir[r_index1][2])];
+            Phi3 = Phi[Index(i + front_dir[r_index2][0], j + front_dir[r_index2][1], k + front_dir[r_index2][2])];
+            Phi4 = Phi[Index(i + front_dir[r_index3][0], j + front_dir[r_index3][1], k + front_dir[r_index3][2])];
+            Phi5 = Phi[Index(i + front_dir[r_index4][0], j + front_dir[r_index4][1], k + front_dir[r_index4][2])];
+            temp_dist1 = min(dist2, dist3);
+            temp_dist2 = min(dist4, dist5);
+            temp_Phi1 = dist2 < dist3 ? Phi2 : Phi3;
+            temp_Phi2 = dist4 < dist5 ? Phi4 : Phi5;
+            Phi[idx_ijk] = (pow(dist1 * temp_dist1, 2)  * temp_Phi2 + pow(dist1 * temp_dist2, 2) * temp_Phi1 + pow(temp_dist2 * temp_dist1, 2) * Phi1)
+                           / (pow(dist1, 2) + pow(temp_dist2, 2) + pow(temp_dist1, 2));
+            break;
+        case TYPE_F:
+            // precisely compute point-surface distance
+//            assert(old_grid->isValidRange(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])
+//                   && old_grid->isValidRange(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])
+//                   && old_grid->isValidRange(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2])
+//                   && old_grid->isValidRange(i + front_dir[3][0], j + front_dir[3][1], k + front_dir[3][2])
+//                   && old_grid->isValidRange(i + front_dir[4][0], j + front_dir[4][1], k + front_dir[4][2])
+//                   && old_grid->isValidRange(i + front_dir[5][0], j + front_dir[5][1], k + front_dir[5][2]));
+            dist1 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[0][0],
+                                                                                                     j + front_dir[0][1],
+                                                                                                     k + front_dir[0][2])]);
+            dist2 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[1][0],
+                                                                                                     j + front_dir[1][1],
+                                                                                                     k + front_dir[1][2])]);
+            dist3 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[2][0],
+                                                                                                     j + front_dir[2][1],
+                                                                                                     k + front_dir[2][2])]);
+            dist4 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[3][0],
+                                                                                                     j + front_dir[3][1],
+                                                                                                     k + front_dir[3][2])]);
+            dist5 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[4][0],
+                                                                                                     j + front_dir[4][1],
+                                                                                                     k + front_dir[4][2])]);
+            dist6 = this->phi[idx_ijk] / (this->phi[idx_ijk] - this->phi[Index(i + front_dir[5][0],
+                                                                                                     j + front_dir[5][1],
+                                                                                                     k + front_dir[5][2])]);
+            Phi1 = Phi[Index(i + front_dir[0][0], j + front_dir[0][1], k + front_dir[0][2])];
+            Phi2 = Phi[Index(i + front_dir[1][0], j + front_dir[1][1], k + front_dir[1][2])];
+            Phi3 = Phi[Index(i + front_dir[2][0], j + front_dir[2][1], k + front_dir[2][2])];
+            Phi4 = Phi[Index(i + front_dir[3][0], j + front_dir[3][1], k + front_dir[3][2])];
+            Phi5 = Phi[Index(i + front_dir[4][0], j + front_dir[4][1], k + front_dir[4][2])];
+            Phi6 = Phi[Index(i + front_dir[5][0], j + front_dir[5][1], k + front_dir[5][2])];
+            temp_dist1 = min(dist1, dist2);
+            temp_dist2 = min(dist3, dist4);
+            temp_dist3 = min(dist5, dist6);
+            temp_Phi1 = dist1 < dist2 ? Phi1 : Phi2;
+            temp_Phi2 = dist3 < dist4 ? Phi3 : Phi4;
+            temp_Phi3 = dist5 < dist6 ? Phi5 : Phi6;
+            Phi[idx_ijk] = (pow(temp_dist2 * temp_dist1, 2)  * temp_Phi3 + pow(temp_dist3 * temp_dist2, 2) * temp_Phi1 + pow(temp_dist3 * temp_dist1, 2) * temp_Phi2)
+                           / (pow(temp_dist3, 2) + pow(temp_dist2, 2) + pow(temp_dist1, 2));
+            // deal with singular point (the value depending on band width) I chose threshold 1.8 here
+//            if (new_grid->phi[idx_ijk] > 1.8) new_grid->phi[idx_ijk] = 1;
+            break;
+        default:
+            cerr << "Wrong front type!" << endl;
+            exit(1);
+    }
+    assert (!isnan(Phi[idx_ijk]));
+    assert (Phi[idx_ijk] <= 2 && Phi[idx_ijk] >= 0);
     return 0;
 }

@@ -1,7 +1,7 @@
 /home/himalaya/Downloads/CLion-2019.2.1/clion-2019.2.1/bin/cmake/linux/bin/cmake -DCMAKE_BUILD_TYPE=Debug -G "CodeBlocks - Unix Makefiles" /home/himalaya/Documents/VMVS
--- Found OpenMP_C: -fopenmp (found version "4.5") 
--- Found OpenMP_CXX: -fopenmp (found version "4.5") 
--- Found OpenMP: TRUE (found version "4.5")  
+-- Found OpenMP_C: -fopenmp  
+-- Found OpenMP_CXX: -fopenmp  
+-- Found OpenMP: TRUE   
 OPENMP FOUND
 /usr/local/include/vtk-8.2/home/himalaya/anaconda3/include/python3.6m
 -- Configuring done

@@ -36,7 +36,10 @@ int main() {
     Init_sphere_shape(box, 7);
 
     Show_3D(all_cams1, box);
-//    Evolve(box, all_cams1);
+#if USE_NEW
+#else
+    Evolve(box, all_cams1);
+#endif
 //    testvtk();
 ////2d test)
 /*

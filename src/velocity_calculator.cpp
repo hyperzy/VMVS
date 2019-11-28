@@ -6,6 +6,7 @@
 #include <iostream>
 #include <numeric>
 #include <cmath>
+#include <cassert>
 
 using namespace std;
 using namespace cv;
@@ -63,9 +64,12 @@ dtype PhiCalculator::Compute_discrepancy(IdxType i, IdxType j, IdxType k, bool i
         }
     }
     if (visible_cam_idx.size() < 2) return MAX_NCC;
-    else
+    else {
         // we use '-1' instead of '+1' because we count an term for a pair of visible cameras
-        return 2 * sum_Phi / (visible_cam_idx.size() * (visible_cam_idx.size() - 1.));
+        dtype res = 2 * sum_Phi / (visible_cam_idx.size() * (visible_cam_idx.size() - 1.));
+        assert(res <= 2 && res >= 0);
+        return res;
+    }
 }
 
 //

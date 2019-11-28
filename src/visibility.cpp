@@ -225,7 +225,7 @@ void Visibility::Calculate_all()
                 }
             }
         }
-        cout << "finished initial surface" << endl;
+//        cout << "finished initial surface" << endl;
 
         //// 2. compute visibility of four quadrants
         for (int j = (direction_flag ? 1 : width - 2); (direction_flag ? j < y_bound : j >= y_bound); j += increment) {
@@ -345,7 +345,7 @@ void Visibility::Calculate_all()
                 }
             }
         }
-        cout << "finished initial surface" << endl;
+//        cout << "finished initial surface" << endl;
 
         //// 2. compute visibility of four quadrants
         for (int i = (direction_flag ? 1 : height - 2); (direction_flag ? i < x_bound : i >= x_bound); i += increment) {
