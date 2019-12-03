@@ -27,7 +27,7 @@ public:
     cv::Point rightmost;
     cv::Point topmost;
     cv::Point bottommost;
-    Camera(cv::Mat P, cv::Mat R, cv::Mat t, cv::Mat K, cv::Mat gray_img, cv::Mat seg_img):
+    Camera(cv::Mat &P, cv::Mat &R, cv::Mat &t, cv::Mat &K, cv::Mat &gray_img, cv::Mat &seg_img):
             P(std::move(P)), R(std::move(R)), t(std::move(t)), K(std::move(K)),
             gray_img(std::move(gray_img)), seg_img(std::move(seg_img))
     {
