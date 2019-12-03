@@ -11,6 +11,8 @@ VTK_MODULE_INIT(vtkRenderingOpenGL2);
 VTK_MODULE_INIT(vtkInteractionStyle);
 VTK_MODULE_INIT(vtkRenderingFreeType);
 
+#include <vtkSTLWriter.h>
+#include <vtkSTLReader.h>
 #include <vtkActor.h>
 #include <vtkCylinderSource.h>
 #include <vtkNamedColors.h>
@@ -314,6 +316,10 @@ void Show_3D(vector<Camera> &all_cams, BoundingBox &box)
     surface_mapper->SetInputConnection(isosurface->GetOutputPort());
     surface_mapper->ScalarVisibilityOn();
 
+    vtkSmartPointer<vtkSTLWriter> stlWriter = vtkSmartPointer<vtkSTLWriter>::New();
+    stlWriter->SetFileName("final_data.stl");
+    stlWriter->SetInputConnection(isosurface->GetOutputPort());
+
     auto surface_actor = vtkSmartPointer<vtkActor>::New();
     surface_actor->SetMapper(surface_mapper);
 
@@ -371,6 +377,7 @@ void Show_3D(vector<Camera> &all_cams, BoundingBox &box)
     iren->AddObserver(vtkCommand::TimerEvent, cb, 1.);
 //    iren->CreateRepeatingTimer(1000);
     iren->Start();
+    stlWriter->Write();
 }
 #else
 void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
@@ -468,3 +475,33 @@ void Show_3D(const vector<Camera> &all_cams, const BoundingBox &box)
     iren->Start();
 }
 #endif
+
+void Show_3D(std::string file_name)
+{
+    vtkSmartPointer<vtkSTLReader> reader =
+            vtkSmartPointer<vtkSTLReader>::New();
+    reader->SetFileName(file_name.c_str());
+    reader->Update();
+
+    vtkSmartPointer<vtkPolyDataMapper> mapper =
+            vtkSmartPointer<vtkPolyDataMapper>::New();
+    mapper->SetInputConnection(reader->GetOutputPort());
+
+    vtkSmartPointer<vtkActor> actor =
+            vtkSmartPointer<vtkActor>::New();
+    actor->SetMapper(mapper);
+
+    vtkSmartPointer<vtkRenderer> renderer =
+            vtkSmartPointer<vtkRenderer>::New();
+    vtkSmartPointer<vtkRenderWindow> renderWindow =
+            vtkSmartPointer<vtkRenderWindow>::New();
+    renderWindow->AddRenderer(renderer);
+    vtkSmartPointer<vtkRenderWindowInteractor> renderWindowInteractor =
+            vtkSmartPointer<vtkRenderWindowInteractor>::New();
+    renderWindowInteractor->SetRenderWindow(renderWindow);
+
+    renderer->AddActor(actor);
+
+    renderWindow->Render();
+    renderWindowInteractor->Start();
+}

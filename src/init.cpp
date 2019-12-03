@@ -119,40 +119,43 @@ void BoundingBox::Determine_bound_coord()
     vector<Point3> point3d_set2;
     Point3 intersected_point;
 
+    int mid_idx = this->__all_cams.size() / 2;
+    int quarter_idx = this->__all_cams.size() / 4;
+    int three_quarter_idx = this->__all_cams.size() / 4 * 3;
     // determine top facet
     point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[0], Direction::TOP);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[4], Direction::TOP);
-    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[4], point3d_set1, point3d_set2);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[mid_idx], Direction::TOP);
+    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[mid_idx], point3d_set1, point3d_set2);
     dtype z_max = intersected_point.z;
 
     // determine bottom facet
     point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[0], Direction::BOTTOM);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[4], Direction::BOTTOM);
-    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[4], point3d_set1, point3d_set2);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[mid_idx], Direction::BOTTOM);
+    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[mid_idx], point3d_set1, point3d_set2);
     dtype z_min = intersected_point.z;
 
     // determine left facet
     point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[0], Direction::LEFT);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[4], Direction::RIGHT);
-    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[4], point3d_set1, point3d_set2);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[mid_idx], Direction::RIGHT);
+    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[mid_idx], point3d_set1, point3d_set2);
     dtype x_min = intersected_point.x;
 
     // determine right facet
     point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[0], Direction::RIGHT);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[4], Direction::LEFT);
-    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[4], point3d_set1, point3d_set2);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[mid_idx], Direction::LEFT);
+    intersected_point = this->Compute_intersection(this->__all_cams[0], this->__all_cams[mid_idx], point3d_set1, point3d_set2);
     dtype x_max = intersected_point.x;
 
     // determine front facet
-    point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[2], Direction::LEFT);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[6], Direction::RIGHT);
-    intersected_point = this->Compute_intersection(this->__all_cams[2], this->__all_cams[6], point3d_set1, point3d_set2);
+    point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[quarter_idx], Direction::LEFT);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[three_quarter_idx], Direction::RIGHT);
+    intersected_point = this->Compute_intersection(this->__all_cams[quarter_idx], this->__all_cams[three_quarter_idx], point3d_set1, point3d_set2);
     dtype y_min = intersected_point.y;
 
     // determine back facet
-    point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[2], Direction::RIGHT);
-    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[6], Direction::LEFT);
-    intersected_point = this->Compute_intersection(this->__all_cams[2], this->__all_cams[6], point3d_set1, point3d_set2);
+    point3d_set1 = this->Compute_back_projection_plane(this->__all_cams[quarter_idx], Direction::RIGHT);
+    point3d_set2 = this->Compute_back_projection_plane(this->__all_cams[three_quarter_idx], Direction::LEFT);
+    intersected_point = this->Compute_intersection(this->__all_cams[quarter_idx], this->__all_cams[three_quarter_idx], point3d_set1, point3d_set2);
     dtype y_max = intersected_point.y;
 
     dtype mid_val = (x_min + x_max) / 2;
@@ -286,28 +289,46 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     }
 #pragma omp barrier
     cout << "Initialize surface cost: " << omp_get_wtime() -time_start << endl;
-    fstream fout("testdata.txt", ios::out);
-    for (int z = 0; z < grid->_depth; z++) {
-        fout << "z = " << z << endl;
-        for (int y = 0; y < grid->_width; y++)
-        {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
-        fout << endl;
-        for (int x = 0; x < grid->_height; x++) {
-
-            for (int y = 0 ; y < grid->_width; y++) {
-                fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
-            }
-            fout << endl;
-        }
-        fout << endl;
-    }
-    fout.close();
+//    fstream fout("testdata.txt", ios::out);
+//    for (int z = 0; z < grid->_depth; z++) {
+//        fout << "z = " << z << endl;
+//        for (int y = 0; y < grid->_width; y++)
+//        {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+//        fout << endl;
+//        for (int x = 0; x < grid->_height; x++) {
+//
+//            for (int y = 0 ; y < grid->_width; y++) {
+//                fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+//            }
+//            fout << endl;
+//        }
+//        fout << endl;
+//    }
+//    fout.close();
 
     auto &coord = box.grid3d->coord;
 
    auto new_grid3d = FMM3d(grid, true, nullptr);
    delete grid;
    grid = new_grid3d;
+
+//    fout.open("testdata.txt", ios::out);
+//    for (int z = 0; z < grid->_depth; z++) {
+//        fout << "z = " << z << endl;
+//        for (int y = 0; y < grid->_width; y++)
+//        {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+//        fout << endl;
+//        for (int x = 0; x < grid->_height; x++) {
+//
+//            for (int y = 0 ; y < grid->_width; y++) {
+//                fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+//            }
+//            fout << endl;
+//        }
+//        fout << endl;
+//    }
+//    fout.close();
+
     //// initial visibility array
     auto start_time = omp_get_wtime();
     for (int i = 0; i < box.__all_cams.size(); i++) {
@@ -330,4 +351,21 @@ void Init_sphere_shape(BoundingBox &box, dtype radius)
     new_grid3d = FMM3d(grid, true, box.velocity_calculator);
     delete grid;
     grid = new_grid3d;
+
+//    fout.open("testdata.txt", ios::out);
+//    for (int z = 0; z < grid->_depth; z++) {
+//        fout << "z = " << z << endl;
+//        for (int y = 0; y < grid->_width; y++)
+//        {fout << scientific << setprecision(3) << setw(5) << setfill('0') << (float)y << " "; }
+//        fout << endl;
+//        for (int x = 0; x < grid->_height; x++) {
+//
+//            for (int y = 0 ; y < grid->_width; y++) {
+//                fout << scientific << setprecision(3) << setw(5) << setfill('0') << grid->phi[grid->Index(x, y, z)] << " ";
+//            }
+//            fout << endl;
+//        }
+//        fout << endl;
+//    }
+//    fout.close();
 }

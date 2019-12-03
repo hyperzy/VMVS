@@ -8,6 +8,8 @@
 #include "base.h"
 #include "visibility.h"
 
+#define USE_SIL 0
+
 class PhiCalculator {
 public:
     PhiCalculator(const std::vector<Camera> &all_cams, const std::vector<Vec3> &coord,

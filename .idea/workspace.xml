@@ -7,24 +7,26 @@
   </component>
   <component name="CMakeSettings">
     <configurations>
-      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+      <configuration PROFILE_NAME="Release" CONFIG_NAME="Release" />
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="Changed part of the extension. Now successfully decoupled positive and negative.">
+    <list default="true" id="c57b1690-351e-46d3-951b-466e029ce3d4" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeCache.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/Makefile.cmake" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/CXX.includecache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.internal" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/depend.make" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/VMVS.dir/src/main.cpp.o" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" beforeDir="false" afterPath="$PROJECT_DIR$/cmake-build-debug/CMakeFiles/clion-log.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/include/evolution.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/evolution.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/display.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/display.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/include/grid3d.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/grid3d.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/include/velocity_calculator.h" beforeDir="false" afterPath="$PROJECT_DIR$/include/velocity_calculator.h" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/display.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/display.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/evolution.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/evolution.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/grid3d.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/grid3d.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/init.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/init.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.cpp" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/velocity_calculator.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/velocity_calculator.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/visibility.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/src/visibility.cpp" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -35,7 +37,7 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Release" />
   <component name="Git.Settings">
     <option name="PUSH_TAGS">
       <GitPushTagMode>
@@ -76,7 +78,7 @@
     </option>
   </component>
   <component name="RunManager">
-    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
+    <configuration name="VMVS" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="VMVS" TARGET_NAME="VMVS" CONFIG_NAME="Release" RUN_TARGET_PROJECT_NAME="VMVS" RUN_TARGET_NAME="VMVS">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
@@ -170,6 +172,7 @@
       <workItem from="1574831865728" duration="2261000" />
       <workItem from="1574860013654" duration="19045000" />
       <workItem from="1574905294735" duration="14839000" />
+      <workItem from="1575331185426" duration="17434000" />
     </task>
     <task id="LOCAL-00001" summary="Second Commit">
       <created>1570199633829</created>
@@ -297,7 +300,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574743170081</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="Fixed a critical bug in cstr. No reference before so std::move will not work.">
+      <created>1575345705034</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1575345705034</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -344,14 +354,15 @@
     <MESSAGE value="Fixed a small but important bug in Marching function." />
     <MESSAGE value="Fixed a small but important bug in Marching function. Changed line 207." />
     <MESSAGE value="Changed part of the extension. Now successfully decoupled positive and negative." />
-    <option name="LAST_COMMIT_MESSAGE" value="Changed part of the extension. Now successfully decoupled positive and negative." />
+    <MESSAGE value="Fixed a critical bug in cstr. No reference before so std::move will not work." />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixed a critical bug in cstr. No reference before so std::move will not work." />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>961</line>
+          <line>990</line>
           <option name="timeStamp" value="28" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
@@ -362,91 +373,105 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>158</line>
+          <line>160</line>
           <option name="timeStamp" value="64" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <condition expression="i == 16 &amp;&amp; j == 16 &amp;&amp; k == 16" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
-          <line>71</line>
+          <line>77</line>
           <option name="timeStamp" value="92" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
-          <line>94</line>
+          <line>100</line>
           <option name="timeStamp" value="97" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>465</line>
+          <line>476</line>
           <option name="timeStamp" value="111" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <condition expression="idx_ijk == 15694" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>751</line>
+          <line>780</line>
           <option name="timeStamp" value="114" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/display.cpp</url>
-          <line>448</line>
+          <line>455</line>
           <option name="timeStamp" value="149" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <condition expression="point.i == 65535 &amp;&amp; point.j == 65535" language="ObjectiveC" />
-          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>170</line>
-          <option name="timeStamp" value="158" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
-          <line>79</line>
+          <line>85</line>
           <option name="timeStamp" value="167" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <condition expression="idx_ijk == 61946" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>591</line>
+          <line>605</line>
           <option name="timeStamp" value="188" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <condition expression="i == 9 &amp;&amp; j == 9 &amp;&amp; k == 9" language="ObjectiveC" />
+          <condition expression="i == 9 &amp;&amp; j == 9 &amp;&amp; k == 8" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>627</line>
+          <line>642</line>
           <option name="timeStamp" value="189" />
         </line-breakpoint>
         <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <condition expression="idx == 68840" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>548</line>
+          <line>562</line>
           <option name="timeStamp" value="190" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/evolution.cpp</url>
-          <line>132</line>
+          <line>143</line>
           <option name="timeStamp" value="191" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <condition expression="i == 8 &amp;&amp; j == 25 &amp;&amp; k == 19" language="ObjectiveC" />
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="i == 9 &amp;&amp; j == 9 &amp;&amp; k == 8" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>554</line>
+          <line>568</line>
           <option name="timeStamp" value="192" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <url>file://$PROJECT_DIR$/src/init.cpp</url>
-          <line>329</line>
-          <option name="timeStamp" value="193" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
-          <condition expression="i == 8 &amp;&amp; j == 25 &amp;&amp; k == 19" language="ObjectiveC" />
+        <line-breakpoint type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <condition expression="i == 45 &amp;&amp; j == 76 &amp;&amp; k == 20" language="ObjectiveC" />
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>485</line>
+          <line>496</line>
           <option name="timeStamp" value="196" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
           <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
-          <line>549</line>
-          <option name="timeStamp" value="197" />
+          <line>1003</line>
+          <option name="timeStamp" value="211" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>1256</line>
+          <option name="timeStamp" value="212" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/main.cpp</url>
+          <line>36</line>
+          <option name="timeStamp" value="218" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/main.cpp</url>
+          <line>32</line>
+          <option name="timeStamp" value="222" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/main.cpp</url>
+          <line>24</line>
+          <option name="timeStamp" value="223" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="com.jetbrains.cidr.execution.debugger.OCBreakpointType">
+          <url>file://$PROJECT_DIR$/src/grid3d.cpp</url>
+          <line>490</line>
+          <option name="timeStamp" value="224" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

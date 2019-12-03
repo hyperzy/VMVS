@@ -19,6 +19,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkAbstractCellLinks.h
  /usr/local/include/vtk-8.2/vtkAbstractMapper.h
  /usr/local/include/vtk-8.2/vtkAbstractMapper3D.h
+ /usr/local/include/vtk-8.2/vtkAbstractPolyDataReader.h
  /usr/local/include/vtk-8.2/vtkActor.h
  /usr/local/include/vtk-8.2/vtkActor2D.h
  /usr/local/include/vtk-8.2/vtkActorCollection.h
@@ -63,6 +64,8 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkGenericDataArray.h
  /usr/local/include/vtk-8.2/vtkGenericDataArray.txx
  /usr/local/include/vtk-8.2/vtkGenericDataArrayLookupHelper.h
+ /usr/local/include/vtk-8.2/vtkIOCoreModule.h
+ /usr/local/include/vtk-8.2/vtkIOGeometryModule.h
  /usr/local/include/vtk-8.2/vtkIOImageModule.h
  /usr/local/include/vtk-8.2/vtkIOStream.h
  /usr/local/include/vtk-8.2/vtkIOStreamFwd.h
@@ -100,6 +103,8 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkRenderer.h
  /usr/local/include/vtk-8.2/vtkRenderingAnnotationModule.h
  /usr/local/include/vtk-8.2/vtkRenderingCoreModule.h
+ /usr/local/include/vtk-8.2/vtkSTLReader.h
+ /usr/local/include/vtk-8.2/vtkSTLWriter.h
  /usr/local/include/vtk-8.2/vtkSetGet.h
  /usr/local/include/vtk-8.2/vtkSmartPointer.h
  /usr/local/include/vtk-8.2/vtkSmartPointerBase.h
@@ -125,6 +130,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o
  /usr/local/include/vtk-8.2/vtkWin32Header.h
  /usr/local/include/vtk-8.2/vtkWindow.h
  /usr/local/include/vtk-8.2/vtkWrappingHints.h
+ /usr/local/include/vtk-8.2/vtkWriter.h
  /usr/local/include/vtk-8.2/vtk_kwiml.h
  /usr/local/include/vtk-8.2/vtkkwiml/abi.h
  /usr/local/include/vtk-8.2/vtkkwiml/int.h

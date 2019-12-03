@@ -115,6 +115,8 @@ bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i>
     front_dir.clear();
     assert(isValidRange(i, j, k));
     auto current_val = this->phi[this->Index(i, j, k)];
+    if (current_val == 0)
+        return true;
     int index[6][3] = {{-1, 0, 0}, {1, 0, 0},
                        {0, -1, 0}, {0, 1, 0},
                        {0, 0, -1}, {0, 0, 1}};
@@ -159,6 +161,15 @@ bool Grid3d::isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i>
         }
     }
     return is_front_here;
+}
+
+bool Grid3d::isRealFront(IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir) const
+{
+    for (const auto &iter : front_dir) {
+      if (phi[Index(i + iter[0], j + iter[1], k + iter[2])] != 0)
+          return true;
+    }
+    return false;
 }
 
 void Grid3d::Marching_pos(std::priority_queue<PointKeyVal> &close_set)
@@ -476,7 +487,7 @@ void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
     //    auto start = chrono::high_resolution_clock::now();
     auto start = omp_get_wtime();
     if (!velocity_calculator) { return; }
-//#pragma omp parallel for default(none) shared(velocity_calculator)
+#pragma omp parallel for default(none) shared(velocity_calculator)
     for (unsigned long idx = 0; idx < this->pos_front_sequence.size(); idx++) {
         auto &point = this->pos_front_sequence[idx];
         IdxType i = point.i;
@@ -488,6 +499,9 @@ void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
 //               && this->grid_prop[idx_ijk].extension_status == ExtensionStatus::NATURAL);
 //        auto start = chrono::high_resolution_clock::now();
         this->Phi[idx_ijk] = velocity_calculator->Compute_discrepancy(i, j, k, true);
+#if USE_SIL
+//        assert(this->Phi[idx_ijk] <= 2 && this->Phi[idx_ijk] >= 0);
+#endif
 //        auto stop = chrono::high_resolution_clock::now();
 //        auto duration = chrono::duration_cast<chrono::microseconds>(stop - start);
 //        cout << "velocity extension cost time: " << duration.count() << endl;
@@ -525,22 +539,22 @@ void Grid3d::Extend_velocity(PhiCalculator *velocity_calculator)
         IdxType k = point.k;
 //        assert(isValidRange(i, j, k));
         auto idx_ijk = this->Index(i, j, k);
-        IdxType argmax_i = this->phi[this->Index(i - 1, j, k)] >= this->phi[this->Index(i + 1, j, k)] ? i - 1 : i + 1;
+        IdxType argmin_i = abs(this->phi[this->Index(i - 1, j, k)]) <= abs(this->phi[this->Index(i + 1, j, k)]) ? i - 1 : i + 1;
 //        assert(isValidRange(i, j + 1, k) && isValidRange(i, j - 1, k));
-        IdxType argmax_j = this->phi[this->Index(i, j - 1, k)] >= this->phi[this->Index(i, j + 1, k)] ? j - 1 : j + 1;
+        IdxType argmin_j = abs(this->phi[this->Index(i, j - 1, k)]) <= abs(this->phi[this->Index(i, j + 1, k)]) ? j - 1 : j + 1;
 //        assert(isValidRange(i, j, k + 1) && isValidRange(i, j, k - 1));
-        IdxType argmax_k = this->phi[this->Index(i, j, k - 1)] >= this->phi[this->Index(i, j, k + 1)] ? k - 1 : k + 1;
-//        assert(isValidRange(argmax_i, j, k));
-        dtype val_x_dir = this->phi[idx_ijk] - this->phi[this->Index(argmax_i, j, k)];
+        IdxType argmin_k = abs(this->phi[this->Index(i, j, k - 1)]) <= abs(this->phi[this->Index(i, j, k + 1)]) ? k - 1 : k + 1;
+//        assert(isValidRange(argmin_i, j, k));
+        dtype val_x_dir = this->phi[idx_ijk] - this->phi[this->Index(argmin_i, j, k)];
         if (val_x_dir > 0) val_x_dir = 0;
-//        assert(isValidRange(i, argmax_j, k));
-        dtype val_y_dir = this->phi[idx_ijk] - this->phi[this->Index(i, argmax_j, k)];
+//        assert(isValidRange(i, argmin_j, k));
+        dtype val_y_dir = this->phi[idx_ijk] - this->phi[this->Index(i, argmin_j, k)];
         if (val_y_dir > 0) val_y_dir = 0;
-//        assert(isValidRange(i, j, argmax_k));
-        dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmax_k)];
+//        assert(isValidRange(i, j, argmin_k));
+        dtype val_z_dir = this->phi[idx_ijk] - this->phi[this->Index(i, j, argmin_k)];
         if (val_z_dir > 0) val_z_dir = 0;
-        dtype val = (this->Phi[this->Index(argmax_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmax_j, k)] * val_y_dir
-               + this->Phi[this->Index(i, j, argmax_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
+        dtype val = (this->Phi[this->Index(argmin_i, j, k)] * val_x_dir + this->Phi[this->Index(i, argmin_j, k)] * val_y_dir
+               + this->Phi[this->Index(i, j, argmin_k)] * val_z_dir) / (val_x_dir + val_y_dir + val_z_dir);
         Phi[idx_ijk] = val;
     }
     // todo: pos extension part
@@ -604,6 +618,7 @@ Grid3d* Grid3d::Reinitialize(PhiCalculator *velocity_calculator)
 
 Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator)
 {
+    dtype float_err = 1e-12;
     //// FMM
     ////// 1. FMM initial step: find front
     //// parallel programming can be applied here
@@ -626,11 +641,11 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
                         // in 3-d case, we need to exam 6 directions
                         vector<cv::Vec3i> front_dir;
                         front_dir.reserve(6);
-                        // if the in only one front direction the opposite value is 0, then we cannot put it into front_sequence
+                        if (abs(init_grid->phi[idx_ijk]) < float_err)
+                            init_grid->phi[idx_ijk] = 0;
+                        // if in all the front directions the opposite value is 0, then we cannot put it into front_sequence
                         // since it will be the extension one
-                        vector<cv::Vec3i> aux_front_dir;
-                        aux_front_dir.reserve(6);
-                        if (init_grid->isFrontHere(i, j, k, front_dir, aux_front_dir) != 0) {
+                        if (init_grid->isFrontHere(i, j, k, front_dir)) {
                             //// Maybe, here performance can be improved by check whether abs(phi_val) < a small number.
                             // narrowband status, phival, velocity
                             // Here all stuff including determining value\ sign\ narrowband status can be integrated into one part
@@ -638,21 +653,35 @@ Grid3d* FMM3d(Grid3d *init_grid, bool reinit, PhiCalculator *velocity_calculator
                             // put >0 and  <0 into different set so that two direction fmm can be done.
                             if (init_grid->phi[idx_ijk] > 0) {
                                 close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
-                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
-                                if ()
-                                new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
+                                if (init_grid->isRealFront(i, j, k, front_dir)) {
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                    new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
+                                    new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
+                                }
+                                else {
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                                    new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
+                                }
                             }
                             else if (init_grid->phi[idx_ijk] < 0) {
                                 close_pq_neg.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
-                                new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
-                                new_grid->neg_front_sequence.emplace_back(IndexSet{i, j, k});
+                                if (init_grid->isRealFront(i, j, k, front_dir)) {
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::OTHER_SIDE;
+                                    new_grid->neg_front_sequence.emplace_back(IndexSet{i, j, k});
+                                    new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
+                                }
+                                else {
+                                    new_grid->grid_prop[idx_ijk].fmm_status = FMM_Status::CLOSE;
+                                    new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::EXTENSION;
+                                }
                             }
                             else {
+//                                close_pq_pos.emplace(PointKeyVal{i, j, k, new_grid->phi[idx_ijk]});
                                 new_grid->pos_front_sequence.emplace_back(IndexSet{i, j, k});
+                                new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
 //                                new_grid->front.emplace_back(IndexSet{i, j, k});
                             }
 //                            new_grid->front.emplace_back(IndexSet{i, j, k});
-                            new_grid->grid_prop[idx_ijk].extension_status = ExtensionStatus::NATURAL;
                         }
                     }
                 }
@@ -1232,3 +1261,5 @@ dtype Grid3d::Determine_velocity_negative(IdxType i, IdxType j, IdxType k, const
     assert (Phi[idx_ijk] <= 2 && Phi[idx_ijk] >= 0);
     return 0;
 }
+
+

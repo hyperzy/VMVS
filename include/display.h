@@ -14,5 +14,6 @@ void Show_3D(std::vector<Camera> &all_cams, BoundingBox &box);
 #else
 void Show_3D(const std::vector<Camera> &all_cams, const BoundingBox &box);
 #endif
+void Show_3D(std::string file_name);
 
 #endif //VMVS_DISPLAY_H

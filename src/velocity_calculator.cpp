@@ -42,6 +42,37 @@ dtype PhiCalculator::Compute_discrepancy(IdxType i, IdxType j, IdxType k, bool i
 {
     auto idx_ijk = Index(i, j, k);
     Vec3 given_point = coord[idx_ijk];
+
+#if USE_SIL
+    uchar velocity = 0;
+    Vec<dtype, 4> hom_res(coord[idx_ijk][0],
+                          coord[idx_ijk][1],
+                          coord[idx_ijk][2],
+                          1);
+    //    vector<unsigned short> visible_cam_idx;
+    vector<int> idx{0, 1, 2, 3, 4, 5, 6, 7};
+    for (auto &iter : idx) {
+        int cam_idx = iter;
+    //    for (unsigned short cam_idx = 0; cam_idx < all_cams.size(); cam_idx++) {
+//        if (psi_arr[cam_idx].psi[idx_ijk] > 0) {
+//            cout << all_cams[cam_idx].P << endl;
+            Mat res1 = all_cams[cam_idx].P * hom_res;
+//            cout << res1 << endl;
+            int x1 = cvRound(res1.at<dtype>(0, 0) / res1.at<dtype>(0, 2));
+            int y1 = cvRound(res1.at<dtype>(0, 1) / res1.at<dtype>(0, 2));
+            // if the projection is outside the image range, than set Phi_ij as 2, which is uncorrelated
+            if (x1 < 0 || x1 >= all_cams[cam_idx].gray_img.cols || y1 < 0 || y1 >= all_cams[cam_idx].gray_img.rows) {
+                return 1.;
+            }
+            else if (all_cams[cam_idx].seg_img.at<uchar>(y1, x1) == 0) {
+                return 1.;
+            }
+            else
+                ;
+//        }
+    }
+    return 0;
+#else
     // normal vector of tangent plane at given point
     Vec3 point_normal;
     Compute_normal(point_normal, i, j, k);
@@ -70,6 +101,7 @@ dtype PhiCalculator::Compute_discrepancy(IdxType i, IdxType j, IdxType k, bool i
         assert(res <= 2 && res >= 0);
         return res;
     }
+#endif
 }
 
 //

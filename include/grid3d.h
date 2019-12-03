@@ -138,6 +138,7 @@ public:
 
     bool isFrontHere(IdxType i, IdxType j, IdxType k, std::vector<cv::Vec3i> &front_dir, std::vector<cv::Vec3i> &aux_front_dir) const;
 
+    bool isRealFront(IdxType i, IdxType j, IdxType k, const std::vector<cv::Vec3i> &front_dir) const;
 
     /**
      *  Actually, maybe this method need to be taken apart for positive and negative since positive dont need to

@@ -18,6 +18,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkAbstractArr
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkAbstractCellLinks.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkAbstractMapper.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkAbstractMapper3D.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkAbstractPolyDataReader.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkActor.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkActor2D.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkActorCollection.h
@@ -62,6 +63,8 @@ CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkFloatArray.
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkGenericDataArray.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkGenericDataArray.txx
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkGenericDataArrayLookupHelper.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkIOCoreModule.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkIOGeometryModule.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkIOImageModule.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkIOStream.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkIOStreamFwd.h
@@ -99,6 +102,8 @@ CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkRenderWindo
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkRenderer.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkRenderingAnnotationModule.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkRenderingCoreModule.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkSTLReader.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkSTLWriter.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkSetGet.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkSmartPointer.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkSmartPointerBase.h
@@ -124,6 +129,7 @@ CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkWeakPointer
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkWin32Header.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkWindow.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkWrappingHints.h
+CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkWriter.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtk_kwiml.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkkwiml/abi.h
 CMakeFiles/VMVS.dir/src/display.cpp.o: /usr/local/include/vtk-8.2/vtkkwiml/int.h

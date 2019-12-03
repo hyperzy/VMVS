@@ -14,16 +14,26 @@ using namespace std;
 int main() {
     double start, end;
     start = clock();
-
+//    Show_3D("./final_data_s.stl");
     vector<Camera> all_cams;
     Read_data("../res/viff.xml", "../res/images", "../res/seg_images", all_cams);
 
+//    vector<Camera> all_cams1{all_cams[0], all_cams[2], all_cams[4], all_cams[6], all_cams[9], all_cams[11], all_cams[13], all_cams[16],
+//                             all_cams[18], all_cams[20], all_cams[22], all_cams[24], all_cams[27], all_cams[29], all_cams[31]};
     vector<Camera> all_cams1{all_cams[0], all_cams[4], all_cams[9], all_cams[13],
                              all_cams[18], all_cams[22], all_cams[27], all_cams[31]};
+//    for (auto &iter : all_cams1) {
+//        cout << iter.P << endl;
+//    }
     all_cams.clear();
     all_cams.clear();
     all_cams.shrink_to_fit();
-
+//    imshow("test", all_cams1[4].seg_img);
+//    waitKey(0);
+//    cout << endl;
+//    for (auto &iter : all_cams1) {
+//        cout << iter.P << endl;
+//    }
     for (auto &iter : all_cams1) {
         iter.Calculate_extrema();
     }
