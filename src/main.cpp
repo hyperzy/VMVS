@@ -11,10 +11,13 @@
 
 using namespace cv;
 using namespace std;
-int main() {
+int main(int argc, char* argv[]) {
     double start, end;
     start = clock();
-//    Show_3D("./final_data_s.stl");
+    if (argc == 2) {
+        string s(argv[1]);
+        Show_3D(s);
+    }
     vector<Camera> all_cams;
     Read_data("../res/viff.xml", "../res/images", "../res/seg_images", all_cams);
 

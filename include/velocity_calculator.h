@@ -8,7 +8,7 @@
 #include "base.h"
 #include "visibility.h"
 
-#define USE_SIL 0
+#define USE_SIL 1
 
 class PhiCalculator {
 public:
