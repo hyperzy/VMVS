@@ -8,4 +8,4 @@ There still are some modules partially incompleted (not very robust) and comment
 
 Here is the result using silhouette infomation
 
-![image](http://github.com/hyperzy/VMVS/master/doc_images/result.png)
+![Repo List](doc_images/result.png)
